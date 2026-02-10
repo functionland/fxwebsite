@@ -1,0 +1,371 @@
+/* === Use Apps Page Styles === */
+
+/* Hero Section */
+.ua-hero {
+  position: relative;
+  background: linear-gradient(135deg, var(--color-darker-bg) 0%, var(--color-dark-bg) 100%);
+  color: var(--color-text-white);
+  padding: 8rem 0 5rem;
+  text-align: center;
+  overflow: hidden;
+}
+
+.ua-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 50%, rgba(29, 185, 84, 0.15) 0%, transparent 60%),
+              radial-gradient(circle at 70% 50%, rgba(29, 185, 84, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.ua-hero__content {
+  position: relative;
+  z-index: 1;
+  max-width: 750px;
+  margin: 0 auto;
+}
+
+.ua-hero__title {
+  font-size: var(--font-size-5xl);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: var(--spacing-md);
+}
+
+.ua-hero__title .text-primary {
+  color: var(--color-primary);
+}
+
+.ua-hero__subtitle {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-white-muted);
+  line-height: 1.7;
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+/* App Cards Section */
+.app-cards {
+  padding: var(--spacing-3xl) 0;
+}
+
+.app-cards__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-lg);
+}
+
+.app-card {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+  display: flex;
+  flex-direction: column;
+}
+
+.app-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+}
+
+.app-card__image {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  background: var(--color-light-bg);
+}
+
+.app-card__body {
+  padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.app-card__name {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--spacing-xs);
+}
+
+.app-card__desc {
+  font-size: var(--font-size-base);
+  color: var(--color-text-light);
+  line-height: 1.7;
+  margin-bottom: var(--spacing-md);
+  flex: 1;
+}
+
+.app-card__badges {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.store-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #000;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+  white-space: nowrap;
+}
+
+.store-badge:hover {
+  opacity: 0.85;
+  transform: translateY(-2px);
+  color: #fff;
+}
+
+.store-badge svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+.store-badge__text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.store-badge__small {
+  font-size: 0.6rem;
+  font-weight: 400;
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.store-badge__name {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Planned Section */
+.planned {
+  background: var(--color-light-bg);
+  padding: var(--spacing-3xl) 0;
+}
+
+.planned__card {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-2xl);
+  max-width: 800px;
+  margin: 0 auto;
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+}
+
+.planned__badge {
+  display: inline-block;
+  background: rgba(29, 185, 84, 0.1);
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  padding: 0.35rem 1rem;
+  border-radius: var(--radius-full);
+  margin-bottom: var(--spacing-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.planned__name {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  margin-bottom: var(--spacing-sm);
+}
+
+.planned__desc {
+  font-size: var(--font-size-base);
+  color: var(--color-text-light);
+  line-height: 1.7;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+/* How-To Section */
+.howto {
+  padding: var(--spacing-3xl) 0;
+}
+
+.howto__steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-2xl);
+}
+
+.howto-step {
+  text-align: center;
+  padding: var(--spacing-lg);
+  position: relative;
+}
+
+.howto-step__number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-white);
+  font-size: var(--font-size-2xl);
+  font-weight: 800;
+  margin-bottom: var(--spacing-md);
+}
+
+.howto-step__title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  margin-bottom: var(--spacing-xs);
+}
+
+.howto-step__text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light);
+  line-height: 1.7;
+}
+
+/* Step connector line (desktop only) */
+.howto-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 28px;
+  right: -16px;
+  width: calc(var(--spacing-lg));
+  height: 2px;
+  background: var(--color-border);
+}
+
+/* Benefits Section */
+.benefits {
+  background: linear-gradient(135deg, var(--color-darker-bg) 0%, var(--color-dark-bg) 100%);
+  color: var(--color-text-white);
+  padding: var(--spacing-3xl) 0;
+}
+
+.benefits .section__subtitle {
+  color: var(--color-text-white-muted);
+}
+
+.benefits__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-lg);
+}
+
+.benefit-card {
+  background: var(--color-dark-card);
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-2xl);
+  transition: border-color var(--transition-base), transform var(--transition-base);
+}
+
+.benefit-card:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-4px);
+}
+
+.benefit-card__icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: var(--spacing-sm);
+}
+
+.benefit-card__title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-primary);
+}
+
+.benefit-card__text {
+  font-size: var(--font-size-base);
+  color: var(--color-text-white-muted);
+  line-height: 1.7;
+}
+
+.benefit-card__detail {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-white-muted);
+  line-height: 1.7;
+  margin-top: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid var(--color-border-dark);
+  opacity: 0.85;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .ua-hero__title {
+    font-size: var(--font-size-4xl);
+  }
+}
+
+@media (max-width: 768px) {
+  .ua-hero {
+    padding: 5rem 0 3.5rem;
+  }
+
+  .ua-hero__title {
+    font-size: var(--font-size-3xl);
+  }
+
+  .app-cards__grid {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .howto__steps {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+    margin: var(--spacing-2xl) auto 0;
+  }
+
+  .howto-step:not(:last-child)::after {
+    display: none;
+  }
+
+  .benefits__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .planned__card {
+    padding: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .ua-hero {
+    padding: 4rem 0 3rem;
+  }
+
+  .ua-hero__title {
+    font-size: var(--font-size-2xl);
+  }
+
+  .store-badge {
+    padding: 0.4rem 0.75rem;
+    font-size: var(--font-size-xs);
+  }
+
+  .store-badge__name {
+    font-size: 0.75rem;
+  }
+}

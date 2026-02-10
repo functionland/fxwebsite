@@ -1,0 +1,484 @@
+/* === Token Page Styles === */
+
+/* Hero Section */
+.token-hero {
+  position: relative;
+  background: linear-gradient(135deg, var(--color-darker-bg) 0%, var(--color-dark-bg) 100%);
+  color: var(--color-text-white);
+  padding: 8rem 0 4rem;
+  text-align: center;
+  overflow: hidden;
+}
+
+.token-hero__title {
+  font-size: var(--font-size-5xl);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: var(--spacing-sm);
+}
+
+.token-hero__subtitle {
+  font-size: var(--font-size-2xl);
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.token-hero__text {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-white-muted);
+  max-width: 650px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* Video Embed */
+.token-video {
+  background: var(--color-darker-bg);
+  padding: 0 0 var(--spacing-3xl);
+}
+
+.token-video__wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding-bottom: 56.25%; /* 16:9 */
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-xl);
+}
+
+.token-video__wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Token Utility Cards */
+.token-utility {
+  padding: var(--spacing-3xl) 0;
+}
+
+.token-utility__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-lg);
+}
+
+.token-utility__card {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+  text-align: center;
+}
+
+.token-utility__card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.token-utility__icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto var(--spacing-sm);
+}
+
+.token-utility__card-title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  margin-bottom: var(--spacing-xs);
+  color: var(--color-text);
+}
+
+.token-utility__card-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light);
+  line-height: 1.7;
+}
+
+/* Participating Section */
+.token-participating {
+  background: var(--color-light-bg);
+  padding: var(--spacing-3xl) 0;
+}
+
+.token-participating__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2xl);
+}
+
+.token-participating__media {
+  flex: 1;
+}
+
+.token-participating__media img {
+  border-radius: var(--radius-lg);
+  width: 100%;
+}
+
+.token-participating__content {
+  flex: 1;
+}
+
+.token-participating__content h2 {
+  font-size: var(--font-size-4xl);
+  font-weight: 800;
+  margin-bottom: var(--spacing-md);
+}
+
+.token-participating__content p {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-light);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Own FULA Section */
+.token-own {
+  background: linear-gradient(135deg, var(--color-darker-bg) 0%, var(--color-dark-bg) 100%);
+  color: var(--color-text-white);
+  padding: var(--spacing-3xl) 0;
+  text-align: center;
+}
+
+.token-own__title {
+  font-size: var(--font-size-4xl);
+  font-weight: 800;
+  margin-bottom: var(--spacing-md);
+}
+
+.token-own__text {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-white-muted);
+  max-width: 700px;
+  margin: 0 auto var(--spacing-lg);
+  line-height: 1.7;
+}
+
+/* FxBlox Banner */
+.token-fxblox {
+  position: relative;
+  padding: var(--spacing-3xl) 0;
+  overflow: hidden;
+}
+
+.token-fxblox__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2xl);
+}
+
+.token-fxblox__media {
+  flex: 1.2;
+}
+
+.token-fxblox__media img {
+  border-radius: var(--radius-lg);
+  width: 100%;
+}
+
+.token-fxblox__content {
+  flex: 1;
+}
+
+.token-fxblox__content h2 {
+  font-size: var(--font-size-4xl);
+  font-weight: 800;
+  margin-bottom: var(--spacing-md);
+}
+
+.token-fxblox__content p {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-light);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Tokenomics Charts */
+.token-charts {
+  background: var(--color-light-bg);
+  padding: var(--spacing-3xl) 0;
+}
+
+.token-charts__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-lg);
+}
+
+.token-charts__item {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-sm);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.token-charts__item iframe {
+  display: block;
+  border-radius: var(--radius-md);
+}
+
+/* Token Info Table */
+.token-info {
+  padding: var(--spacing-3xl) 0;
+}
+
+.token-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.token-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.token-table th,
+.token-table td {
+  padding: 1rem 1.25rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--font-size-sm);
+}
+
+.token-table th {
+  background: var(--color-dark-bg);
+  color: var(--color-text-white);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: var(--font-size-xs);
+}
+
+.token-table tr:last-child td {
+  border-bottom: none;
+}
+
+.token-table tr:hover td {
+  background: var(--color-light-bg);
+}
+
+.token-table a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.token-table a:hover {
+  color: var(--color-primary-dark);
+}
+
+.token-table code {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: var(--font-size-xs);
+  background: var(--color-light-bg);
+  padding: 0.15rem 0.4rem;
+  border-radius: var(--radius-sm);
+  word-break: break-all;
+}
+
+/* Contract Addresses */
+.token-contracts {
+  background: var(--color-light-bg);
+  padding: var(--spacing-3xl) 0;
+}
+
+/* Get Token / Exchange Section */
+.token-exchange {
+  padding: var(--spacing-3xl) 0;
+}
+
+.token-exchange__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-lg);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.token-exchange__card {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+  text-align: center;
+}
+
+.token-exchange__card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.token-exchange__card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.token-exchange__card-body {
+  padding: var(--spacing-md);
+}
+
+.token-exchange__card-title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  margin-bottom: var(--spacing-xs);
+}
+
+.token-exchange__card-note {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light);
+  margin-bottom: var(--spacing-sm);
+}
+
+.token-exchange__card .btn {
+  width: 100%;
+}
+
+/* FAQ Accordion */
+.token-faq {
+  background: var(--color-light-bg);
+  padding: var(--spacing-3xl) 0;
+}
+
+.token-faq__list {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.token-faq__item {
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-sm);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.token-faq__question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+  background: none;
+  border: none;
+  transition: color var(--transition-fast);
+}
+
+.token-faq__question:hover {
+  color: var(--color-primary);
+}
+
+.token-faq__icon {
+  font-size: var(--font-size-xl);
+  font-weight: 300;
+  line-height: 1;
+  transition: transform var(--transition-base);
+  flex-shrink: 0;
+  margin-left: var(--spacing-sm);
+}
+
+.token-faq__item.active .token-faq__icon {
+  transform: rotate(45deg);
+}
+
+.token-faq__answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height var(--transition-base);
+}
+
+.token-faq__item.active .token-faq__answer {
+  max-height: 500px;
+}
+
+.token-faq__answer-inner {
+  padding: 0 1.5rem 1.25rem;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light);
+  line-height: 1.7;
+}
+
+/* === Responsive === */
+@media (max-width: 1024px) {
+  .token-hero__title {
+    font-size: var(--font-size-4xl);
+  }
+
+  .token-charts__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .token-hero {
+    padding: 5rem 0 3rem;
+  }
+
+  .token-hero__title {
+    font-size: var(--font-size-3xl);
+  }
+
+  .token-hero__subtitle {
+    font-size: var(--font-size-xl);
+  }
+
+  .token-utility__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .token-participating__inner {
+    flex-direction: column;
+  }
+
+  .token-fxblox__inner {
+    flex-direction: column;
+  }
+
+  .token-exchange__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .token-own__title {
+    font-size: var(--font-size-2xl);
+  }
+
+  .token-table th,
+  .token-table td {
+    padding: 0.75rem 1rem;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .token-hero {
+    padding: 4rem 0 2rem;
+  }
+
+  .token-hero__title {
+    font-size: var(--font-size-2xl);
+  }
+
+  .token-hero__subtitle {
+    font-size: var(--font-size-lg);
+  }
+
+  .token-video__wrapper {
+    border-radius: var(--radius-md);
+  }
+}

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found - Functionland</title>
+  <link rel="icon" type="image/png" href="assets/images/logo/fula-icon-green.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/header.css">
+  <link rel="stylesheet" href="css/footer.css">
+  <style>
+    .error-page {
+      min-height: 60vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: var(--color-darker-bg);
+      color: var(--color-text-white);
+      padding: var(--spacing-3xl) 0;
+    }
+    .error-page__code {
+      font-size: 8rem;
+      font-weight: 800;
+      color: var(--color-primary);
+      line-height: 1;
+      margin-bottom: var(--spacing-sm);
+    }
+    .error-page__title {
+      font-size: var(--font-size-3xl);
+      font-weight: 700;
+      margin-bottom: var(--spacing-sm);
+    }
+    .error-page__text {
+      font-size: var(--font-size-lg);
+      color: var(--color-text-white-muted);
+      margin-bottom: var(--spacing-lg);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-header__logo"><img src="assets/images/logo/fula-lockup-green.png" alt="Functionland" width="140" height="36"></a>
+      <button class="hamburger" aria-label="Toggle menu"><span class="hamburger__line"></span><span class="hamburger__line"></span><span class="hamburger__line"></span></button>
+      <nav class="nav">
+        <ul class="nav__list">
+          <li class="nav__item"><a href="index.html" class="nav__link">Home</a></li>
+          <li class="nav__item"><a href="ecosystem/" class="nav__link">Ecosystem</a></li>
+          <li class="nav__item nav__item--has-dropdown">
+            <a href="#" class="nav__link">Participate <span class="nav__arrow">&#9662;</span></a>
+            <div class="nav__dropdown">
+              <a href="use-apps/" class="nav__dropdown-link">Use Apps</a>
+              <a href="fxblox-device/" class="nav__dropdown-link">FxBlox Device</a>
+              <a href="token/" class="nav__dropdown-link">Token</a>
+              <a href="build/" class="nav__dropdown-link">Build Apps</a>
+              <a href="fula-staking/" class="nav__dropdown-link">FULA Staking</a>
+              <a href="fula-vip-staking/" class="nav__dropdown-link">FULA VIP Staking</a>
+              <a href="ipfs-ecosystem/" class="nav__dropdown-link">IPFS Ecosystem</a>
+              <a href="live-map/" class="nav__dropdown-link">Live Map</a>
+              <a href="fec-nfts/" class="nav__dropdown-link">FEC NFTs</a>
+              <a href="https://docs.fx.land/functionyard" class="nav__dropdown-link nav__dropdown-link--external" target="_blank" rel="noopener">Documentation</a>
+              <a href="https://fx.land/FulaWP" class="nav__dropdown-link nav__dropdown-link--external" target="_blank" rel="noopener">Whitepaper</a>
+            </div>
+          </li>
+          <li class="nav__item"><a href="about/" class="nav__link">About</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="error-page">
+      <div class="container">
+        <div class="error-page__code">404</div>
+        <h1 class="error-page__title">Page Not Found</h1>
+        <p class="error-page__text">The page you're looking for doesn't exist or has been moved.</p>
+        <a href="index.html" class="btn btn--primary btn--lg">Back to Home</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/nav.js"></script>
+</body>
+</html>
