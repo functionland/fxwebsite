@@ -162,7 +162,7 @@
 
 .multichain__grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: var(--spacing-lg);
 }
 
@@ -183,6 +183,7 @@
   width: 48px;
   height: 48px;
   margin: 0 auto var(--spacing-sm);
+  object-fit: contain;
 }
 
 .chain-card__name {
