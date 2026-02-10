@@ -8,8 +8,10 @@
   fetch('/assets/data/instagram.json')
     .then(function (r) { return r.json(); })
     .then(function (data) {
-      var post = data.posts && data.posts[0];
-      if (!post || !post.image) throw new Error('No post');
+      var posts = data.posts && data.posts.slice(0, 5);
+      if (!posts || !posts.length) throw new Error('No posts');
+      var post = posts[Math.floor(Math.random() * posts.length)];
+      if (!post.image) throw new Error('No image');
 
       var a = document.createElement('a');
       a.href = post.permalink;
