@@ -2,10 +2,38 @@
 
 /* Hero */
 .device-hero {
-  background: linear-gradient(135deg, var(--color-darker-bg) 0%, var(--color-dark-bg) 100%);
+  position: relative;
+  background: var(--color-darker-bg);
   color: var(--color-text-white);
   padding: 8rem 0 5rem;
   text-align: center;
+  overflow: hidden;
+}
+
+.device-hero__video {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 100%;
+  width: auto;
+  min-width: 100%;
+  object-fit: contain;
+  opacity: 0.4;
+}
+
+.device-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to right, var(--color-darker-bg) 0%, transparent 20%, transparent 80%, var(--color-darker-bg) 100%);
+  pointer-events: none;
+}
+
+.device-hero .container {
+  position: relative;
+  z-index: 1;
 }
 
 .device-hero__title {

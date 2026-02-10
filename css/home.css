@@ -335,7 +335,7 @@
 }
 
 .ig-feed__card {
-  flex: 0 0 calc((100% - 4rem) / 5);
+  flex: 0 0 calc((100% - 2rem) / 3);
   scroll-snap-align: start;
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -357,7 +357,7 @@
 
 .ig-feed__img {
   width: 100%;
-  aspect-ratio: 1;
+  aspect-ratio: 3 / 4;
   object-fit: cover;
   display: block;
 }
@@ -404,33 +404,21 @@
 }
 
 /* Instagram responsive */
-@media (max-width: 1024px) {
-  .ig-feed__card {
-    flex: 0 0 calc((100% - 3rem) / 4);
-  }
-}
-
 @media (max-width: 768px) {
   .ig-feed__card {
-    flex: 0 0 calc((100% - 2rem) / 3);
+    flex: 0 0 calc((100% - 1rem) / 2);
   }
 }
 
-@media (max-width: 576px) {
+@media (max-width: 480px) {
   .ig-feed__card {
-    flex: 0 0 calc((100% - 1rem) / 2);
+    flex: 0 0 100%;
   }
 
   .ig-feed__prev,
   .ig-feed__next {
     width: 32px;
     height: 32px;
-  }
-}
-
-@media (max-width: 400px) {
-  .ig-feed__card {
-    flex: 0 0 100%;
   }
 }
 
