@@ -55,6 +55,7 @@ import createGlobe from 'https://esm.sh/cobe';
   }
 
   function initGlobe() {
+    try {
     var dims = sizeCanvas();
     globe = createGlobe(canvas, {
       devicePixelRatio: dims.dpr,
@@ -80,6 +81,11 @@ import createGlobe from 'https://esm.sh/cobe';
         state.phi = phi;
       }
     });
+    } catch (err) {
+      console.warn('Globe initialization failed:', err);
+      var globeSection = canvas.closest('.node-network__globe');
+      if (globeSection) globeSection.style.display = 'none';
+    }
   }
 
   // Pointer events for drag-to-rotate

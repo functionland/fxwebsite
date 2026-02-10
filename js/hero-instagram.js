@@ -23,11 +23,16 @@
       img.alt = post.caption ? post.caption.slice(0, 80) : 'Functionland on Instagram';
       img.className = 'network-window__img';
       img.loading = 'eager';
+      img.style.opacity = '0';
+      img.style.transition = 'opacity 0.4s ease';
 
       img.onload = function () {
         if (skeleton) skeleton.style.display = 'none';
         a.appendChild(img);
         wrap.appendChild(a);
+        // Force reflow then fade in
+        img.offsetHeight;
+        img.style.opacity = '1';
       };
 
       img.onerror = function () {

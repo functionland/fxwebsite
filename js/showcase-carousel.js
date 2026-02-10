@@ -10,7 +10,15 @@
   var current = 0;
   var count = slides.length;
   var interval = null;
-  var DELAY = 5000;
+  var DELAY = 7000;
+  var paused = false;
+
+  // Aria-live region for screen reader announcements
+  var liveRegion = document.createElement('div');
+  liveRegion.setAttribute('aria-live', 'polite');
+  liveRegion.setAttribute('aria-atomic', 'true');
+  liveRegion.className = 'sr-only';
+  carousel.appendChild(liveRegion);
 
   function goTo(index) {
     if (index < 0) index = count - 1;
@@ -20,6 +28,7 @@
     for (var i = 0; i < dots.length; i++) {
       dots[i].classList.toggle('showcase-carousel__dot--active', i === current);
     }
+    liveRegion.textContent = 'Slide ' + (current + 1) + ' of ' + count;
   }
 
   function next() { goTo(current + 1); }
@@ -27,7 +36,9 @@
 
   function resetTimer() {
     clearInterval(interval);
-    interval = setInterval(next, DELAY);
+    if (!paused) {
+      interval = setInterval(next, DELAY);
+    }
   }
 
   prevBtn.addEventListener('click', function () { prev(); resetTimer(); });
@@ -43,6 +54,20 @@
   carousel.addEventListener('mouseenter', function () { clearInterval(interval); });
   carousel.addEventListener('mouseleave', function () { resetTimer(); });
 
+  // Keyboard navigation
+  carousel.setAttribute('tabindex', '0');
+  carousel.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      prev();
+      resetTimer();
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      next();
+      resetTimer();
+    }
+  });
+
   // Touch swipe
   var startX = 0;
   carousel.addEventListener('touchstart', function (e) {
@@ -55,6 +80,17 @@
       resetTimer();
     }
   }, { passive: true });
+
+  // Pause when tab is hidden
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) {
+      paused = true;
+      clearInterval(interval);
+    } else {
+      paused = false;
+      resetTimer();
+    }
+  });
 
   resetTimer();
 })();

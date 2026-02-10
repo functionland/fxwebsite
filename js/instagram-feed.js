@@ -45,7 +45,10 @@
         });
       }
     })
-    .catch(function () {});
+    .catch(function () {
+      track.innerHTML = '<p style="text-align:center;color:var(--color-text-muted);padding:2rem;width:100%;">Could not load updates. Please try again later.</p>';
+      section.classList.add('ig-feed--loaded');
+    });
 
   function escapeHtml(str) {
     var div = document.createElement('div');

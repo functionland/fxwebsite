@@ -16,11 +16,11 @@
       var progress = Math.min((timestamp - startTime) / duration, 1);
       var eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
       var current = Math.floor(eased * target);
-      el.textContent = prefix + current.toLocaleString() + suffix;
+      el.textContent = prefix + current.toLocaleString('en-US') + suffix;
       if (progress < 1) {
         requestAnimationFrame(step);
       } else {
-        el.textContent = prefix + target.toLocaleString() + suffix;
+        el.textContent = prefix + target.toLocaleString('en-US') + suffix;
       }
     }
 

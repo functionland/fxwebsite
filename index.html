@@ -28,13 +28,15 @@
 </head>
 <body>
 
+  <a href="#main-content" class="skip-link">Skip to content</a>
+
   <!-- Header -->
   <header class="site-header">
     <div class="container">
       <a href="index.html" class="site-header__logo">
         <img src="assets/images/logo/fula-lockup-green.png" alt="Functionland" width="140" height="36">
       </a>
-      <button class="hamburger" aria-label="Toggle menu">
+      <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
         <span class="hamburger__line"></span>
         <span class="hamburger__line"></span>
         <span class="hamburger__line"></span>
@@ -71,7 +73,7 @@
     </div>
   </header>
 
-  <main>
+  <main id="main-content">
     <!-- Hero -->
     <section class="hero">
       <div class="hero__mesh"></div>
@@ -88,15 +90,8 @@
           </div>
           <div class="hero__instagram" id="hero-instagram">
             <div class="network-window">
-              <div class="network-window__topbar">
-                <span class="network-window__live-dot"></span>
-                <span>LIVE</span>
-                <span class="network-window__sep"></span>
-                <svg class="network-window__ig-icon" viewBox="0 0 24 24"><path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 1 0 0-12.324zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405a1.441 1.441 0 1 1-2.882 0 1.441 1.441 0 0 1 2.882 0z"/></svg>
-              </div>
               <div class="network-window__image-wrap">
                 <div class="network-window__skeleton"></div>
-                <div class="network-window__overlay">@functionland</div>
               </div>
             </div>
             <div class="network-window__connector network-window__connector--1"></div>
@@ -123,11 +118,11 @@
     </section>
 
     <!-- Features -->
-    <section class="features section">
+    <section class="features section" aria-label="Product features">
       <div class="container">
         <div class="section__header fade-up">
           <h2 class="section__title">Why Functionland?</h2>
-          <p class="section__subtitle">Super fast, super low cost, super green, super decentralized. Just all round super.</p>
+          <p class="section__subtitle">Infrastructure that scales with you. Fast, affordable, green, and fully decentralized.</p>
         </div>
         <div class="features__grid">
           <div class="feature-card fade-up">
@@ -176,8 +171,109 @@
       </div>
     </section>
 
+    <!-- How It Works -->
+    <section class="how-it-works section section--light" aria-label="How it works">
+      <div class="container">
+        <div class="section__header fade-up">
+          <h2 class="section__title">How It Works</h2>
+        </div>
+        <div class="how-it-works__tabs fade-up" role="tablist" aria-label="Choose your role">
+          <button class="how-it-works__tab how-it-works__tab--active" role="tab" aria-selected="true" aria-controls="hiw-developers" id="tab-developers">App Developers</button>
+          <button class="how-it-works__tab" role="tab" aria-selected="false" aria-controls="hiw-providers" id="tab-providers">Storage Providers</button>
+          <button class="how-it-works__tab" role="tab" aria-selected="false" aria-controls="hiw-users" id="tab-users">App Users</button>
+        </div>
+        <!-- Developers -->
+        <div class="how-it-works__panel how-it-works__panel--active" id="hiw-developers" role="tabpanel" aria-labelledby="tab-developers">
+          <div class="how-it-works__steps fade-up">
+            <div class="how-it-works__step">
+              <div class="how-it-works__number">1</div>
+              <h3 class="how-it-works__step-title">Use Any S3 Library</h3>
+              <p class="how-it-works__step-text">Keep your existing tools. Fula is compatible with standard S3 libraries you already know.</p>
+            </div>
+            <div class="how-it-works__connector" aria-hidden="true">
+              <svg width="40" height="20" viewBox="0 0 40 20" fill="none"><path d="M0 10H35M35 10L28 3M35 10L28 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="how-it-works__step">
+              <div class="how-it-works__number">2</div>
+              <h3 class="how-it-works__step-title">Build on Fula</h3>
+              <p class="how-it-works__step-text">Replace central storage servers with the Fula network. No Web3 knowledge needed.</p>
+            </div>
+            <div class="how-it-works__connector" aria-hidden="true">
+              <svg width="40" height="20" viewBox="0 0 40 20" fill="none"><path d="M0 10H35M35 10L28 3M35 10L28 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="how-it-works__step">
+              <div class="how-it-works__number">3</div>
+              <h3 class="how-it-works__step-title">Publish</h3>
+              <p class="how-it-works__step-text">Ship your app backed by decentralized infrastructure. Your users own their data.</p>
+            </div>
+          </div>
+          <div class="how-it-works__cta">
+            <a href="build/" class="btn btn--outline btn--arrow">Start Building</a>
+          </div>
+        </div>
+        <!-- Storage Providers -->
+        <div class="how-it-works__panel" id="hiw-providers" role="tabpanel" aria-labelledby="tab-providers" hidden>
+          <div class="how-it-works__steps">
+            <div class="how-it-works__step">
+              <div class="how-it-works__number">1</div>
+              <h3 class="how-it-works__step-title">Get FxBlox</h3>
+              <p class="how-it-works__step-text">Order your FxBlox hardware — a compact, energy-efficient node designed for everyone.</p>
+            </div>
+            <div class="how-it-works__connector" aria-hidden="true">
+              <svg width="40" height="20" viewBox="0 0 40 20" fill="none"><path d="M0 10H35M35 10L28 3M35 10L28 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="how-it-works__step">
+              <div class="how-it-works__number">2</div>
+              <h3 class="how-it-works__step-title">Plug In</h3>
+              <p class="how-it-works__step-text">Connect to your network and storage. One-click setup — no technical skills needed.</p>
+            </div>
+            <div class="how-it-works__connector" aria-hidden="true">
+              <svg width="40" height="20" viewBox="0 0 40 20" fill="none"><path d="M0 10H35M35 10L28 3M35 10L28 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="how-it-works__step">
+              <div class="how-it-works__number">3</div>
+              <h3 class="how-it-works__step-title">Earn Crypto</h3>
+              <p class="how-it-works__step-text">Start earning FULA rewards by providing storage and compute to the decentralized network.</p>
+            </div>
+          </div>
+          <div class="how-it-works__cta">
+            <a href="fxblox-device/" class="btn btn--outline btn--arrow">Get FxBlox</a>
+          </div>
+        </div>
+        <!-- App Users -->
+        <div class="how-it-works__panel" id="hiw-users" role="tabpanel" aria-labelledby="tab-users" hidden>
+          <div class="how-it-works__steps">
+            <div class="how-it-works__step">
+              <div class="how-it-works__number">1</div>
+              <h3 class="how-it-works__step-title">Download</h3>
+              <p class="how-it-works__step-text">Get apps from Google Play or the App Store — just like you normally would.</p>
+            </div>
+            <div class="how-it-works__connector" aria-hidden="true">
+              <svg width="40" height="20" viewBox="0 0 40 20" fill="none"><path d="M0 10H35M35 10L28 3M35 10L28 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="how-it-works__step">
+              <div class="how-it-works__number">2</div>
+              <h3 class="how-it-works__step-title">Use Normally</h3>
+              <p class="how-it-works__step-text">It works like any app you know. No Web3 knowledge needed — zero learning curve.</p>
+            </div>
+            <div class="how-it-works__connector" aria-hidden="true">
+              <svg width="40" height="20" viewBox="0 0 40 20" fill="none"><path d="M0 10H35M35 10L28 3M35 10L28 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="how-it-works__step">
+              <div class="how-it-works__number">3</div>
+              <h3 class="how-it-works__step-title">You're an Owner</h3>
+              <p class="how-it-works__step-text">You just upgraded from user to owner. Your data lives on your terms, not someone else's servers.</p>
+            </div>
+          </div>
+          <div class="how-it-works__cta">
+            <a href="use-apps/" class="btn btn--outline btn--arrow">Explore Apps</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Node Network Stats -->
-    <section class="node-network">
+    <section class="node-network" aria-label="Network statistics">
       <div class="container">
         <div class="node-network__split fade-up">
           <div class="node-network__content">
@@ -207,7 +303,7 @@
           <div class="node-network__globe">
             <div class="globe-scene">
               <div class="globe-glow"></div>
-              <canvas id="cobe-globe"></canvas>
+              <canvas id="cobe-globe"><p>3D globe showing Fula network nodes worldwide</p></canvas>
               <div class="orbital-ring orbital-ring--1"><div class="orbital-dot"></div></div>
               <div class="orbital-ring orbital-ring--2"><div class="orbital-dot"></div></div>
               <div class="orbital-ring orbital-ring--3"><div class="orbital-dot"></div></div>
@@ -218,9 +314,12 @@
     </section>
 
     <!-- Product Showcase + Testimonials Carousel -->
-    <section class="showcase section">
+    <section class="showcase section" aria-label="Product showcase and testimonials">
       <div class="container">
-        <div class="showcase-carousel fade-up">
+        <div class="section__header fade-up">
+          <h2 class="section__title">Trusted By Industry Leaders</h2>
+        </div>
+        <div class="showcase-carousel fade-up" role="region" aria-roledescription="carousel" aria-label="Product showcase">
           <div class="showcase-carousel__track">
             <!-- Slide 1 -->
             <div class="showcase-slide" data-index="0">
@@ -228,7 +327,7 @@
                 <div class="showcase-slide__media">
                   <img src="assets/images/home/fxfotos2.jpg" alt="FxFiles - Decentralized file storage" loading="lazy">
                 </div>
-                <h2 class="showcase-slide__title">Your Files, Your Cloud</h2>
+                <h3 class="showcase-slide__title">Your Files, Your Cloud</h3>
                 <p class="showcase-slide__desc">FxFiles is a file manager app that syncs your files with the Fula decentralized cloud. Your data stays yours, with no centralized servers.</p>
                 <div class="mt-2">
                   <a href="use-apps/" class="btn btn--primary btn--arrow">Explore Apps</a>
@@ -253,7 +352,7 @@
                 <div class="showcase-slide__media">
                   <img src="assets/images/home/expandable.jpg" alt="FxBlox expandable hardware" loading="lazy">
                 </div>
-                <h2 class="showcase-slide__title">Expandable Hardware</h2>
+                <h3 class="showcase-slide__title">Expandable Hardware</h3>
                 <p class="showcase-slide__desc">FxBlox is designed to grow with you. Add storage, expansion cards, and custom modules to build the node that fits your needs.</p>
                 <div class="mt-2">
                   <a href="fxblox-device/" class="btn btn--primary btn--arrow">Learn More</a>
@@ -278,7 +377,7 @@
                 <div class="showcase-slide__media">
                   <img src="assets/images/home/woman-cafe-mockup.jpg" alt="Mobile app experience" loading="lazy">
                 </div>
-                <h2 class="showcase-slide__title">Web2 Experience, Web3 Power</h2>
+                <h3 class="showcase-slide__title">Web2 Experience, Web3 Power</h3>
                 <p class="showcase-slide__desc">Use familiar apps powered by decentralized infrastructure. No crypto knowledge needed &mdash; just install and go.</p>
                 <div class="mt-2">
                   <a href="use-apps/" class="btn btn--primary btn--arrow">Get Started</a>
@@ -303,7 +402,7 @@
                 <div class="showcase-slide__media">
                   <img src="assets/images/home/production.jpg" alt="FxBlox production design" loading="lazy">
                 </div>
-                <h2 class="showcase-slide__title">Built for Production</h2>
+                <h3 class="showcase-slide__title">Built for Production</h3>
                 <p class="showcase-slide__desc">FxBlox hardware is designed by Yves Behar, hailed by Forbes as the most influential industrial designer. Quality you can see and feel.</p>
                 <div class="mt-2">
                   <a href="fxblox-device/" class="btn btn--primary btn--arrow">See FxBlox</a>
@@ -359,6 +458,41 @@
       </div>
     </section>
 
+    <!-- FAQ Section -->
+    <section class="faq section" aria-label="Frequently asked questions">
+      <div class="container">
+        <div class="section__header fade-up">
+          <h2 class="section__title">Frequently Asked Questions</h2>
+        </div>
+        <div class="faq__list fade-up">
+          <details class="faq__item">
+            <summary class="faq__question">Do I need technical skills to run FxBlox?</summary>
+            <div class="faq__answer">
+              <p>Not at all. FxBlox is designed as a plug-and-play device. Simply connect it to your network and storage, and the one-click setup handles the rest. No coding or technical background required.</p>
+            </div>
+          </details>
+          <details class="faq__item">
+            <summary class="faq__question">How much can I earn with FxBlox?</summary>
+            <div class="faq__answer">
+              <p>Earnings depend on factors like your storage contribution, uptime, and network demand. The more reliable your node and the more storage you provide, the more FULA rewards you can earn.</p>
+            </div>
+          </details>
+          <details class="faq__item">
+            <summary class="faq__question">What internet speed do I need?</summary>
+            <div class="faq__answer">
+              <p>Basic broadband is sufficient. FxBlox is designed to work efficiently with standard home internet connections. A stable connection matters more than raw speed.</p>
+            </div>
+          </details>
+          <details class="faq__item">
+            <summary class="faq__question">Which countries support FxBlox?</summary>
+            <div class="faq__answer">
+              <p>FxBlox is currently active in 30+ countries worldwide. The network is continuously expanding as more node operators join from around the globe.</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
     <!-- CTA Section -->
     <section class="cta-section">
       <div class="container">
@@ -381,7 +515,55 @@
         </div>
       </div>
     </section>
+
+    <!-- Token Warning Banner -->
+    <div id="disclaimer-banner" style="background:#fff4e5;border-bottom:2px solid #ffcc80;padding:15px;font-family:sans-serif;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <strong style="color:#b34700;">⚠️ Important Information</strong>
+        <label for="lang-select" class="sr-only">Select language</label>
+        <select id="lang-select" style="padding:5px;border:1px solid #ccc;border-radius:4px;">
+          <option value="en" selected>English</option>
+          <option value="zh">中文 (Chinese)</option>
+          <option value="tw">繁體中文 (Taiwanese)</option>
+          <option value="ms">Bahasa Melayu (Malaysian)</option>
+          <option value="hi">हिन्दी (Hindi - India)</option>
+          <option value="ar">العربية (Arabic)</option>
+        </select>
+      </div>
+      <p id="disclaimer-text" style="margin-top:10px;line-height:1.5;font-size:14px;color:#333;">
+        FULA Token is a utility token intended solely for use within the Functionland ecosystem.
+        It does not represent an investment, security, or share in any company, and it does not provide any ownership, voting rights, or entitlement to profits.<br><br>
+        The value of FULA may fluctuate significantly and may become worthless. Do not purchase FULA tokens with any expectation of profit.
+        Participation in the token sale or secondary market is entirely at your own risk.<br><br>
+        FULA tokens are not being offered or sold in jurisdictions where such distribution or sale would be unlawful.
+        Participants are responsible for ensuring compliance with all applicable laws in their jurisdiction.<br><br>
+        Always do your own research and seek independent legal, tax, and financial advice before contributing.
+      </p>
+    </div>
+    <script>
+    (function() {
+      var disclaimers = {
+        zh: "FULA 代币是仅供在 Functionland 生态系统中使用的实用代币。它不代表任何公司的投资、证券或股份，也不提供所有权、投票权或利润分配权。\nFULA 的价值可能会大幅波动甚至变得一文不值。请不要以盈利预期购买 FULA 代币。参与代币销售或二级市场交易完全由您自行承担风险。\nFULA 代币不会在法律禁止的司法管辖区内发行或销售。参与者需自行确保遵守其所在司法管辖区的所有适用法律。\n请务必自行研究并在出资前寻求独立的法律、税务和财务建议。",
+        tw: "FULA 代幣是僅供在 Functionland 生態系統中使用的功能性代幣。它不代表任何公司的投資、證券或股份，也不提供所有權、投票權或分紅權。\nFULA 的價值可能大幅波動甚至歸零。請勿以獲利為目的購買 FULA 代幣。參與代幣銷售或二級市場交易的風險完全由您自行承擔。\nFULA 代幣不會在法律禁止的司法管轄區內發行或銷售。參與者需自行確保遵守所在地法律。\n請務必自行研究並在出資前尋求獨立的法律、稅務與財務建議。",
+        ms: "Token FULA ialah token utiliti yang hanya bertujuan untuk digunakan dalam ekosistem Functionland. Ia tidak mewakili pelaburan, sekuriti, atau saham dalam mana-mana syarikat dan tidak memberikan hak pemilikan, hak mengundi, atau hak keuntungan.\nNilai FULA boleh berubah dengan ketara dan mungkin menjadi tidak bernilai. Jangan beli token FULA dengan jangkaan keuntungan. Penyertaan dalam jualan token atau pasaran sekunder adalah sepenuhnya atas risiko anda sendiri.\nToken FULA tidak ditawarkan atau dijual di bidang kuasa di mana pengedaran atau jualan tersebut adalah menyalahi undang-undang. Peserta bertanggungjawab memastikan pematuhan terhadap semua undang-undang yang berkenaan di bidang kuasa mereka.\nSentiasa lakukan penyelidikan anda sendiri dan dapatkan nasihat undang-undang, cukai, dan kewangan bebas sebelum menyumbang.",
+        hi: "FULA टोकन केवल Functionland इकोसिस्टम के भीतर उपयोग के लिए एक उपयोगिता टोकन है। यह किसी कंपनी में निवेश, प्रतिभूति या शेयर का प्रतिनिधित्व नहीं करता है और न ही स्वामित्व, मतदान अधिकार या लाभ का अधिकार देता है।\nFULA का मूल्य काफी हद तक उतार-चढ़ाव कर सकता है और बेकार भी हो सकता है। कृपया लाभ की अपेक्षा से FULA टोकन न खरीदें। टोकन बिक्री या द्वितीयक बाजार में भागीदारी पूरी तरह से आपके अपने जोखिम पर है।\nFULA टोकन उन क्षेत्रों में पेश या बेचे नहीं जा रहे हैं जहां ऐसा वितरण या बिक्री अवैध है। प्रतिभागी अपने क्षेत्र के सभी लागू कानूनों के अनुपालन के लिए जिम्मेदार हैं।\nकृपया अपना स्वयं का शोध करें और योगदान करने से पहले स्वतंत्र कानूनी, कर और वित्तीय सलाह लें।",
+        ar: "رمز FULA هو رمز استخدامي مخصص فقط للاستخدام ضمن نظام Functionland البيئي. لا يمثل استثمارًا أو ورقة مالية أو حصة في أي شركة، ولا يمنح أي حقوق ملكية أو تصويت أو أرباح.\nقد يتقلب سعر FULA بشكل كبير وقد يصبح عديم القيمة. لا تشترِ رموز FULA على أمل تحقيق أرباح. المشاركة في بيع الرموز أو السوق الثانوية تقع على مسؤوليتك الخاصة بالكامل.\nلا يتم عرض أو بيع رموز FULA في أي ولاية قضائية يكون فيها هذا التوزيع أو البيع غير قانوني. يتحمل المشاركون مسؤولية ضمان الامتثال لجميع القوانين المعمول بها في ولايتهم القضائية.\nيُرجى دائمًا إجراء البحث الخاص بك وطلب المشورة القانونية والضريبية والمالية المستقلة قبل المساهمة."
+      };
+      var sel = document.getElementById('lang-select');
+      if (sel) sel.addEventListener('change', function(e) {
+        var text = e.target.value === 'en' ? null : disclaimers[e.target.value];
+        var el = document.getElementById('disclaimer-text');
+        if (text) el.innerText = text;
+        else location.reload();
+      });
+    })();
+    </script>
   </main>
+
+  <!-- Scroll to top -->
+  <button id="scroll-top" class="scroll-top" aria-label="Scroll to top">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 15V5M10 5L5 10M10 5L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
 
   <!-- Footer -->
   <footer class="site-footer">
@@ -454,6 +636,8 @@
   </footer>
 
   <script src="js/nav.js"></script>
+  <script src="js/scroll-top.js" defer></script>
+  <script src="js/how-it-works-tabs.js" defer></script>
   <script src="js/analytics.js"></script>
   <script src="js/carousel.js" defer></script>
   <script src="js/counter.js" defer></script>
