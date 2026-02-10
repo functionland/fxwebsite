@@ -105,6 +105,11 @@
   background: rgba(29, 185, 84, 0.05);
 }
 
+.nav__dropdown-link--active {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
 .nav__dropdown-link--external::after {
   content: ' ↗';
   font-size: 0.7rem;
