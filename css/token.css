@@ -414,6 +414,229 @@
   line-height: 1.7;
 }
 
+/* Utility Nested List (Token Info table) */
+.token-utility-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.token-utility-list > li {
+  margin-bottom: 0.5rem;
+}
+
+.token-utility-list > li:last-child {
+  margin-bottom: 0;
+}
+
+.token-utility-list__heading {
+  font-weight: 600;
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+}
+
+.token-utility-list__sub {
+  list-style: disc;
+  padding-left: 1.25rem;
+  margin-top: 0.25rem;
+}
+
+.token-utility-list__sub li {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-light);
+  line-height: 1.6;
+}
+
+/* Token Info CTA Buttons */
+.token-info__cta {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+/* Tabbed Contract/Wallet Section */
+.token-tabs__nav {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid var(--color-border);
+  margin-bottom: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.token-tabs__nav::-webkit-scrollbar {
+  display: none;
+}
+
+.token-tabs__btn {
+  padding: 0.75rem 1.25rem;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-light);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+  margin-bottom: -2px;
+}
+
+.token-tabs__btn:hover {
+  color: var(--color-primary);
+}
+
+.token-tabs__btn.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.token-tabs__panel {
+  display: none;
+}
+
+.token-tabs__panel.active {
+  display: block;
+}
+
+/* Contract table: allow wrapping for notes & description */
+.token-table--contracts td {
+  white-space: normal;
+}
+
+.token-table--contracts td:nth-child(3) {
+  min-width: 140px;
+}
+
+/* Notes column styling */
+.token-table .cell-note {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-light);
+  line-height: 1.5;
+}
+
+.token-table .cell-note p {
+  margin: 0 0 0.25rem;
+}
+
+.token-table .cell-note p:last-child {
+  margin-bottom: 0;
+}
+
+/* Sub-address rows */
+.token-table .sub-address {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-light);
+}
+
+.token-table .sub-address code {
+  font-size: 0.7rem;
+}
+
+/* Backed By Carousel */
+.token-backers {
+  background: var(--color-darker-bg);
+  padding: var(--spacing-3xl) 0;
+  overflow: hidden;
+}
+
+.token-backers .section__title,
+.token-backers .section__subtitle {
+  color: var(--color-text-white);
+}
+
+.token-backers .section__subtitle {
+  color: var(--color-text-white-muted);
+}
+
+.token-backers__track {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  width: max-content;
+  padding: 0.75rem 0;
+}
+
+.token-backers__row {
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.token-backers__row:last-child {
+  margin-bottom: 0;
+}
+
+.token-backers__track--ltr {
+  animation: scrollLTR 30s linear infinite;
+}
+
+.token-backers__track--rtl {
+  animation: scrollRTL 30s linear infinite;
+}
+
+@keyframes scrollLTR {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes scrollRTL {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+.token-backers__logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  opacity: 0.6;
+  transition: opacity var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.token-backers__logo:hover {
+  opacity: 1;
+}
+
+/* FAQ Section */
+.token-faq__answer-inner ul,
+.token-faq__answer-inner ol {
+  padding-left: 1.25rem;
+  margin: 0.5rem 0;
+}
+
+.token-faq__answer-inner li {
+  margin-bottom: 0.25rem;
+}
+
+.token-faq__answer-inner strong {
+  color: var(--color-text);
+}
+
+.token-faq__answer-inner .token-table {
+  margin-top: 0.75rem;
+}
+
+/* Top Holders table inside FAQ */
+.token-faq__answer-inner .token-table td {
+  white-space: normal;
+  vertical-align: top;
+}
+
+.token-faq__highlights {
+  margin-top: 1rem;
+  padding-left: 1.25rem;
+}
+
+.token-faq__highlights li {
+  margin-bottom: 0.25rem;
+}
+
 /* === Responsive === */
 @media (max-width: 1024px) {
   .token-hero__title {
@@ -461,7 +684,27 @@
   .token-table th,
   .token-table td {
     padding: 0.75rem 1rem;
-    white-space: nowrap;
+  }
+
+  .token-table--contracts {
+    min-width: 700px;
+  }
+
+  .token-tabs__btn {
+    padding: 0.6rem 1rem;
+    font-size: var(--font-size-xs);
+  }
+
+  .token-info__cta {
+    flex-direction: column;
+  }
+
+  .token-backers__logo {
+    height: 32px;
+  }
+
+  .token-backers__track {
+    gap: 2rem;
   }
 }
 
