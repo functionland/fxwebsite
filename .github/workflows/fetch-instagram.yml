@@ -1,0 +1,117 @@
+name: Fetch Instagram Posts
+
+on:
+  schedule:
+    # Runs daily at 6:00 AM UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  fetch-posts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Refresh Instagram token
+        id: refresh
+        env:
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+        run: |
+          # Attempt to refresh the long-lived token (valid for 60 days)
+          RESPONSE=$(curl -sf "https://graph.instagram.com/refresh_access_token?grant_type=ig_exchange_token&access_token=${INSTAGRAM_ACCESS_TOKEN}" || true)
+          if echo "$RESPONSE" | jq -e '.access_token' > /dev/null 2>&1; then
+            echo "Token refreshed successfully"
+            NEW_TOKEN=$(echo "$RESPONSE" | jq -r '.access_token')
+            echo "token=${NEW_TOKEN}" >> "$GITHUB_OUTPUT"
+          else
+            echo "Token refresh failed or not needed, using existing token"
+            echo "token=${INSTAGRAM_ACCESS_TOKEN}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Fetch latest posts from Instagram
+        env:
+          TOKEN: ${{ steps.refresh.outputs.token }}
+        run: |
+          set -e
+
+          # Fetch latest 10 media posts
+          MEDIA=$(curl -sf "https://graph.instagram.com/me/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp&limit=10&access_token=${TOKEN}")
+
+          if [ -z "$MEDIA" ]; then
+            echo "Failed to fetch Instagram media"
+            exit 1
+          fi
+
+          # Create images directory
+          mkdir -p assets/images/instagram
+
+          # Clear old images
+          rm -f assets/images/instagram/*.jpg assets/images/instagram/*.webp
+
+          # Process each post
+          echo '{"updated":"'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'","posts":[' > /tmp/ig_posts.json
+
+          FIRST=true
+          echo "$MEDIA" | jq -c '.data[]' | while read -r POST; do
+            MEDIA_TYPE=$(echo "$POST" | jq -r '.media_type')
+            POST_ID=$(echo "$POST" | jq -r '.id')
+            CAPTION=$(echo "$POST" | jq -r '.caption // ""' | head -c 200)
+            PERMALINK=$(echo "$POST" | jq -r '.permalink')
+            TIMESTAMP=$(echo "$POST" | jq -r '.timestamp')
+
+            # Skip non-image types that don't have usable thumbnails
+            if [ "$MEDIA_TYPE" = "VIDEO" ]; then
+              IMG_URL=$(echo "$POST" | jq -r '.thumbnail_url // empty')
+            else
+              IMG_URL=$(echo "$POST" | jq -r '.media_url // empty')
+            fi
+
+            if [ -z "$IMG_URL" ]; then
+              continue
+            fi
+
+            # Download image
+            IMG_FILE="assets/images/instagram/${POST_ID}.jpg"
+            if curl -sf -o "$IMG_FILE" "$IMG_URL"; then
+              # Add comma separator for non-first entries
+              if [ "$FIRST" = true ]; then
+                FIRST=false
+              else
+                echo ',' >> /tmp/ig_posts.json
+              fi
+
+              # Write post JSON (escape caption for JSON safety)
+              CAPTION_ESCAPED=$(echo "$CAPTION" | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read().strip()))')
+              cat >> /tmp/ig_posts.json <<POSTEOF
+          {"id":"${POST_ID}","caption":${CAPTION_ESCAPED},"image":"${IMG_FILE}","permalink":"${PERMALINK}","timestamp":"${TIMESTAMP}"}
+          POSTEOF
+            fi
+          done
+
+          echo ']}' >> /tmp/ig_posts.json
+
+          # Validate JSON and move to final location
+          if python3 -c "import json; json.load(open('/tmp/ig_posts.json'))"; then
+            cp /tmp/ig_posts.json assets/data/instagram.json
+            echo "Successfully fetched Instagram posts"
+            cat assets/data/instagram.json | python3 -m json.tool
+          else
+            echo "Generated invalid JSON, keeping existing data"
+            exit 1
+          fi
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/data/instagram.json assets/images/instagram/
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update Instagram feed — $(date -u +%Y-%m-%d)"
+            git push
+          fi

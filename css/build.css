@@ -121,6 +121,12 @@
 .lang-badge__dot--js         { background: #f7df1e; }
 .lang-badge__dot--react      { background: #61dafb; }
 
+.build-hero__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
 /* Toolkit Intro Section */
 .toolkit-intro {
   padding: var(--spacing-3xl) 0;
