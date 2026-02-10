@@ -5,7 +5,7 @@
   var frame = document.getElementById('hero-instagram');
   var skeleton = wrap.querySelector('.network-window__skeleton');
 
-  fetch('/assets/data/instagram.json')
+  fetch('/assets/data/instagram.json?v=' + Date.now())
     .then(function (r) { return r.json(); })
     .then(function (data) {
       var posts = data.posts && data.posts.slice(0, 5);
