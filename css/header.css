@@ -120,6 +120,12 @@
   opacity: 0.6;
 }
 
+/* Nav CTA Button */
+.nav__cta {
+  margin-left: 1rem;
+  flex-shrink: 0;
+}
+
 /* Hamburger */
 .hamburger {
   display: none;
@@ -218,5 +224,12 @@
   .nav__dropdown-link {
     padding: 0.6rem 1.5rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .nav__cta {
+    margin: 1rem 0 0;
+    margin-left: 0;
+    text-align: center;
+    justify-content: center;
   }
 }

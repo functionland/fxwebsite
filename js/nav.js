@@ -73,4 +73,21 @@
       });
     }
   });
+
+  // Platform-aware header CTA
+  var navCta = document.getElementById('nav-cta');
+  if (navCta) {
+    var ua = navigator.userAgent || '';
+    if (/android/i.test(ua)) {
+      navCta.href = 'https://play.google.com/store/apps/details?id=land.fx.files';
+      navCta.target = '_blank';
+      navCta.rel = 'noopener';
+      navCta.textContent = 'Get FxFiles';
+    } else if (/iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
+      navCta.href = 'https://apps.apple.com/ca/app/fxfiles/id1658500313';
+      navCta.target = '_blank';
+      navCta.rel = 'noopener';
+      navCta.textContent = 'Get FxFiles';
+    }
+  }
 })();

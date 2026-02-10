@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Functionland - DePIN Storage Platform | Earn Crypto with FxBlox</title>
-  <meta name="description" content="The first DePIN blockchain platform for decentralized data storage. Own your data with FxBlox hardware, earn crypto rewards, and join 900+ nodes powering the Fula network.">
-  <meta property="og:title" content="Functionland - DePIN Storage Platform">
-  <meta property="og:description" content="Own the Cloud. Earn Crypto with FxBlox. The first DePIN blockchain for decentralized data storage.">
+  <title>Functionland - Own Your Files | Decentralized Storage with Fula Network</title>
+  <meta name="description" content="Own your files, not just use them. FxFiles puts your photos, docs, and data on the decentralized Fula network — no Web3 knowledge needed. Download for Android and iOS.">
+  <meta property="og:title" content="Functionland - Own Your Files, Not Someone Else's Servers">
+  <meta property="og:description" content="Your data lives on the decentralized Fula network. Use familiar apps, no Web3 knowledge needed. Upgrade from user to owner.">
   <meta property="og:url" content="https://fx.land/">
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://fx.land/assets/images/logo/fula-icon-green.png">
@@ -69,6 +69,7 @@
             <a href="about/" class="nav__link">About</a>
           </li>
         </ul>
+        <a id="nav-cta" href="use-apps/" class="btn btn--primary btn--sm nav__cta">Own Your Files</a>
       </nav>
     </div>
   </header>
@@ -81,12 +82,30 @@
       <div class="container">
         <div class="hero__split">
           <div class="hero__content">
-            <h1 class="hero__title">Functionland DePIN: <span class="gradient-text">Own the Cloud</span> | Earn Crypto with FxBlox</h1>
-            <p class="hero__subtitle">The first DePIN blockchain platform for decentralized data storage. Own your data with FxBlox hardware, earn crypto rewards, and join 900+ nodes powering the network.</p>
+            <h1 class="hero__title"><span class="gradient-text">Own Your Files.</span> Not Just a User — an Owner.</h1>
+            <p class="hero__subtitle">Your photos, docs, and data live on the decentralized Fula network — not on someone else's servers. Use familiar apps, no Web3 knowledge needed.</p>
             <div class="hero__buttons">
-              <a href="fxblox-device/" class="btn btn--primary btn--lg btn--arrow">Get FxBlox</a>
+              <a id="hero-app-link" href="use-apps/" class="btn btn--primary btn--lg btn--arrow">Get FxFiles</a>
               <a href="ecosystem/" class="btn btn--glass btn--lg">Explore Ecosystem</a>
             </div>
+            <script>
+            (function () {
+              var link = document.getElementById('hero-app-link');
+              if (!link) return;
+              var ua = navigator.userAgent || '';
+              if (/android/i.test(ua)) {
+                link.href = 'https://play.google.com/store/apps/details?id=land.fx.files';
+                link.target = '_blank';
+                link.rel = 'noopener';
+                link.textContent = 'Get FxFiles on Android';
+              } else if (/iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
+                link.href = 'https://apps.apple.com/ca/app/fxfiles/id1658500313';
+                link.target = '_blank';
+                link.rel = 'noopener';
+                link.textContent = 'Get FxFiles on iOS';
+              }
+            })();
+            </script>
           </div>
           <div class="hero__instagram" id="hero-instagram">
             <div class="network-window">
@@ -178,13 +197,42 @@
           <h2 class="section__title">How It Works</h2>
         </div>
         <div class="how-it-works__tabs fade-up" role="tablist" aria-label="Choose your role">
-          <button class="how-it-works__tab how-it-works__tab--active" role="tab" aria-selected="true" aria-controls="hiw-developers" id="tab-developers">App Developers</button>
+          <button class="how-it-works__tab how-it-works__tab--active" role="tab" aria-selected="true" aria-controls="hiw-users" id="tab-users">App Users</button>
+          <button class="how-it-works__tab" role="tab" aria-selected="false" aria-controls="hiw-developers" id="tab-developers">App Developers</button>
           <button class="how-it-works__tab" role="tab" aria-selected="false" aria-controls="hiw-providers" id="tab-providers">Storage Providers</button>
-          <button class="how-it-works__tab" role="tab" aria-selected="false" aria-controls="hiw-users" id="tab-users">App Users</button>
+        </div>
+        <!-- App Users -->
+        <div class="how-it-works__panel how-it-works__panel--active" id="hiw-users" role="tabpanel" aria-labelledby="tab-users">
+          <div class="how-it-works__steps">
+            <div class="how-it-works__step">
+              <div class="how-it-works__number">1</div>
+              <h3 class="how-it-works__step-title">Download</h3>
+              <p class="how-it-works__step-text">Get apps from Google Play or the App Store — just like you normally would.</p>
+            </div>
+            <div class="how-it-works__connector" aria-hidden="true">
+              <svg width="40" height="20" viewBox="0 0 40 20" fill="none"><path d="M0 10H35M35 10L28 3M35 10L28 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="how-it-works__step">
+              <div class="how-it-works__number">2</div>
+              <h3 class="how-it-works__step-title">Use Normally</h3>
+              <p class="how-it-works__step-text">It works like any app you know. No Web3 knowledge needed — zero learning curve.</p>
+            </div>
+            <div class="how-it-works__connector" aria-hidden="true">
+              <svg width="40" height="20" viewBox="0 0 40 20" fill="none"><path d="M0 10H35M35 10L28 3M35 10L28 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="how-it-works__step">
+              <div class="how-it-works__number">3</div>
+              <h3 class="how-it-works__step-title">You're an Owner</h3>
+              <p class="how-it-works__step-text">You just upgraded from user to owner. Your data lives on your terms, not someone else's servers.</p>
+            </div>
+          </div>
+          <div class="how-it-works__cta">
+            <a href="use-apps/" class="btn btn--outline btn--arrow">Explore Apps</a>
+          </div>
         </div>
         <!-- Developers -->
-        <div class="how-it-works__panel how-it-works__panel--active" id="hiw-developers" role="tabpanel" aria-labelledby="tab-developers">
-          <div class="how-it-works__steps fade-up">
+        <div class="how-it-works__panel" id="hiw-developers" role="tabpanel" aria-labelledby="tab-developers" hidden>
+          <div class="how-it-works__steps">
             <div class="how-it-works__step">
               <div class="how-it-works__number">1</div>
               <h3 class="how-it-works__step-title">Use Any S3 Library</h3>
@@ -238,35 +286,6 @@
           </div>
           <div class="how-it-works__cta">
             <a href="fxblox-device/" class="btn btn--outline btn--arrow">Get FxBlox</a>
-          </div>
-        </div>
-        <!-- App Users -->
-        <div class="how-it-works__panel" id="hiw-users" role="tabpanel" aria-labelledby="tab-users" hidden>
-          <div class="how-it-works__steps">
-            <div class="how-it-works__step">
-              <div class="how-it-works__number">1</div>
-              <h3 class="how-it-works__step-title">Download</h3>
-              <p class="how-it-works__step-text">Get apps from Google Play or the App Store — just like you normally would.</p>
-            </div>
-            <div class="how-it-works__connector" aria-hidden="true">
-              <svg width="40" height="20" viewBox="0 0 40 20" fill="none"><path d="M0 10H35M35 10L28 3M35 10L28 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <div class="how-it-works__step">
-              <div class="how-it-works__number">2</div>
-              <h3 class="how-it-works__step-title">Use Normally</h3>
-              <p class="how-it-works__step-text">It works like any app you know. No Web3 knowledge needed — zero learning curve.</p>
-            </div>
-            <div class="how-it-works__connector" aria-hidden="true">
-              <svg width="40" height="20" viewBox="0 0 40 20" fill="none"><path d="M0 10H35M35 10L28 3M35 10L28 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <div class="how-it-works__step">
-              <div class="how-it-works__number">3</div>
-              <h3 class="how-it-works__step-title">You're an Owner</h3>
-              <p class="how-it-works__step-text">You just upgraded from user to owner. Your data lives on your terms, not someone else's servers.</p>
-            </div>
-          </div>
-          <div class="how-it-works__cta">
-            <a href="use-apps/" class="btn btn--outline btn--arrow">Explore Apps</a>
           </div>
         </div>
       </div>
@@ -464,31 +483,97 @@
         <div class="section__header fade-up">
           <h2 class="section__title">Frequently Asked Questions</h2>
         </div>
-        <div class="faq__list fade-up">
-          <details class="faq__item">
-            <summary class="faq__question">Do I need technical skills to run FxBlox?</summary>
-            <div class="faq__answer">
-              <p>Not at all. FxBlox is designed as a plug-and-play device. Simply connect it to your network and storage, and the one-click setup handles the rest. No coding or technical background required.</p>
-            </div>
-          </details>
-          <details class="faq__item">
-            <summary class="faq__question">How much can I earn with FxBlox?</summary>
-            <div class="faq__answer">
-              <p>Earnings depend on factors like your storage contribution, uptime, and network demand. The more reliable your node and the more storage you provide, the more FULA rewards you can earn.</p>
-            </div>
-          </details>
-          <details class="faq__item">
-            <summary class="faq__question">What internet speed do I need?</summary>
-            <div class="faq__answer">
-              <p>Basic broadband is sufficient. FxBlox is designed to work efficiently with standard home internet connections. A stable connection matters more than raw speed.</p>
-            </div>
-          </details>
-          <details class="faq__item">
-            <summary class="faq__question">Which countries support FxBlox?</summary>
-            <div class="faq__answer">
-              <p>FxBlox is currently active in 30+ countries worldwide. The network is continuously expanding as more node operators join from around the globe.</p>
-            </div>
-          </details>
+        <div class="faq__tabs fade-up" role="tablist" aria-label="FAQ audience">
+          <button class="how-it-works__tab how-it-works__tab--active" role="tab" aria-selected="true" aria-controls="faq-users" id="faq-tab-users">App Users</button>
+          <button class="how-it-works__tab" role="tab" aria-selected="false" aria-controls="faq-developers" id="faq-tab-developers">App Developers</button>
+          <button class="how-it-works__tab" role="tab" aria-selected="false" aria-controls="faq-providers" id="faq-tab-providers">Storage Providers</button>
+        </div>
+        <!-- App Users FAQ -->
+        <div class="how-it-works__panel how-it-works__panel--active" id="faq-users" role="tabpanel" aria-labelledby="faq-tab-users">
+          <div class="faq__list">
+            <details class="faq__item">
+              <summary class="faq__question">Do I need any technical or Web3 knowledge?</summary>
+              <div class="faq__answer">
+                <p>Not at all. You just download the app from Google Play or the App Store and use it like any normal app. Everything decentralized happens behind the scenes.</p>
+              </div>
+            </details>
+            <details class="faq__item">
+              <summary class="faq__question">What makes this different from Google Drive or iCloud?</summary>
+              <div class="faq__answer">
+                <p>Your files are stored on a decentralized network instead of a single company's servers. You truly own your data — no one can access, mine, or shut off your storage.</p>
+              </div>
+            </details>
+            <details class="faq__item">
+              <summary class="faq__question">Is my data safe on the Fula network?</summary>
+              <div class="faq__answer">
+                <p>Yes. Your data is encrypted and replicated across multiple nodes. It's actually more resilient than traditional cloud storage because there's no single point of failure.</p>
+              </div>
+            </details>
+            <details class="faq__item">
+              <summary class="faq__question">What apps can I use right now?</summary>
+              <div class="faq__answer">
+                <p>FxFiles is available on Android and iOS for file storage and photo backup. More apps are being built by developers on the Fula network every day.</p>
+              </div>
+            </details>
+          </div>
+        </div>
+        <!-- Developers FAQ -->
+        <div class="how-it-works__panel" id="faq-developers" role="tabpanel" aria-labelledby="faq-tab-developers" hidden>
+          <div class="faq__list">
+            <details class="faq__item">
+              <summary class="faq__question">Do I need to know Web3 to build an app?</summary>
+              <div class="faq__answer">
+                <p>No. Fula is based on standard S3 APIs, so you can use the same libraries and tools you already know. No blockchain or Web3 knowledge required.</p>
+              </div>
+            </details>
+            <details class="faq__item">
+              <summary class="faq__question">Can I migrate my existing app to Fula?</summary>
+              <div class="faq__answer">
+                <p>Yes. If your app already supports S3, migrating is as simple as changing the S3 endpoint. No rewrite needed — just point to the Fula network and you're done.</p>
+              </div>
+            </details>
+            <details class="faq__item">
+              <summary class="faq__question">Can I build apps for any platform?</summary>
+              <div class="faq__answer">
+                <p>Yes. Android, iOS, Windows, macOS, and Linux all have S3 libraries available for app developers. Build once with standard APIs, deploy everywhere.</p>
+              </div>
+            </details>
+            <details class="faq__item">
+              <summary class="faq__question">What's the benefit for developers?</summary>
+              <div class="faq__answer">
+                <p>Storage is more reliable thanks to built-in replication, and data storage costs are offloaded from your infrastructure. You can focus on the app experience instead of dealing with storage costs and complications.</p>
+              </div>
+            </details>
+          </div>
+        </div>
+        <!-- Storage Providers FAQ -->
+        <div class="how-it-works__panel" id="faq-providers" role="tabpanel" aria-labelledby="faq-tab-providers" hidden>
+          <div class="faq__list">
+            <details class="faq__item">
+              <summary class="faq__question">Do I need technical skills to run FxBlox?</summary>
+              <div class="faq__answer">
+                <p>Not at all. FxBlox is plug-and-play. Connect it to your network and storage, and the one-click setup handles the rest.</p>
+              </div>
+            </details>
+            <details class="faq__item">
+              <summary class="faq__question">How much can I earn with FxBlox?</summary>
+              <div class="faq__answer">
+                <p>Earnings depend on your storage contribution, uptime, and network demand. The more reliable your node and the more storage you provide, the more FULA rewards you earn.</p>
+              </div>
+            </details>
+            <details class="faq__item">
+              <summary class="faq__question">What internet speed do I need?</summary>
+              <div class="faq__answer">
+                <p>Basic broadband is sufficient. FxBlox works efficiently with standard home internet. A stable connection matters more than raw speed.</p>
+              </div>
+            </details>
+            <details class="faq__item">
+              <summary class="faq__question">How much does it cost to run?</summary>
+              <div class="faq__answer">
+                <p>FxBlox is a low-power device that costs under $1 a month in electricity. It only needs air for cooling — no fans, no noise, no high energy bills.</p>
+              </div>
+            </details>
+          </div>
         </div>
       </div>
     </section>
