@@ -497,14 +497,32 @@
     <section class="cta-section">
       <div class="container">
         <div class="fade-up">
-          <h2 class="cta-section__title">Ready to Own the Cloud?</h2>
-          <p class="cta-section__text">Join thousands of node operators earning crypto rewards while powering the decentralized future.</p>
+          <h2 class="cta-section__title">Ready to Own Your Data?</h2>
+          <p class="cta-section__text">Download FxFiles and take control of your files. No Web3 knowledge needed — just install and go.</p>
           <div>
-            <a href="https://shop.fx.land" class="btn btn--glass btn--lg btn--arrow" target="_blank" rel="noopener">Get FxBlox Now</a>
+            <a id="cta-app-link" href="use-apps/" class="btn btn--glass btn--lg btn--arrow">Get FxFiles</a>
           </div>
         </div>
       </div>
     </section>
+    <script>
+    (function () {
+      var link = document.getElementById('cta-app-link');
+      if (!link) return;
+      var ua = navigator.userAgent || '';
+      if (/android/i.test(ua)) {
+        link.href = 'https://play.google.com/store/apps/details?id=land.fx.files';
+        link.target = '_blank';
+        link.rel = 'noopener';
+        link.textContent = 'Get FxFiles on Android';
+      } else if (/iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
+        link.href = 'https://apps.apple.com/ca/app/fxfiles/id1658500313';
+        link.target = '_blank';
+        link.rel = 'noopener';
+        link.textContent = 'Get FxFiles on iOS';
+      }
+    })();
+    </script>
 
     <!-- Disclaimer -->
     <section class="section">
