@@ -4,7 +4,7 @@
 .eco-hero {
   background: linear-gradient(135deg, var(--color-darker-bg) 0%, var(--color-dark-bg) 100%);
   color: var(--color-text-white);
-  padding: 8rem 0 5rem;
+  padding: 10rem 0 7rem;
   text-align: center;
 }
 
