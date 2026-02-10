@@ -97,6 +97,7 @@
 .carousel__item {
   flex-shrink: 0;
   height: 50px;
+  object-fit: contain;
   filter: grayscale(1) brightness(1.5);
   opacity: 0.5;
   transition: filter var(--transition-base), opacity var(--transition-base);
