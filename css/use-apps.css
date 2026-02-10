@@ -78,7 +78,7 @@
 }
 
 .app-card:hover {
-  transform: translateY(-6px);
+  transform: translateY(-3px);
   box-shadow: var(--shadow-lg);
 }
 
@@ -125,7 +125,7 @@
   background: #000;
   color: #fff;
   padding: 0.5rem 1rem;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-pill);
   font-size: var(--font-size-sm);
   font-weight: 600;
   transition: opacity var(--transition-fast), transform var(--transition-fast);
@@ -134,7 +134,7 @@
 
 .store-badge:hover {
   opacity: 0.85;
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   color: #fff;
 }
 
@@ -289,7 +289,7 @@
 
 .benefit-card:hover {
   border-color: var(--color-primary);
-  transform: translateY(-4px);
+  transform: translateY(-3px);
 }
 
 .benefit-card__icon {

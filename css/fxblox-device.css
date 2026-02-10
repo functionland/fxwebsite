@@ -43,7 +43,7 @@
 }
 
 .product-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
   box-shadow: var(--shadow-xl);
 }
 
@@ -85,7 +85,7 @@
   font-size: var(--font-size-sm);
   font-weight: 600;
   padding: 0.5rem 1.5rem;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-pill);
   letter-spacing: 0.05em;
 }
 
@@ -111,7 +111,7 @@
 }
 
 .value-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
   box-shadow: var(--shadow-lg);
 }
 
@@ -326,7 +326,7 @@
   background: var(--color-dark-bg);
   color: var(--color-text-white);
   padding: 0.875rem 1.75rem;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-pill);
   font-weight: 600;
   font-size: var(--font-size-base);
   transition: all var(--transition-base);
@@ -335,7 +335,7 @@
 
 .app-download__btn:hover {
   background: var(--color-darker-bg);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   box-shadow: var(--shadow-lg);
 }
 

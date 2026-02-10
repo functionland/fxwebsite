@@ -68,14 +68,15 @@
   <main>
     <!-- Hero -->
     <section class="hero">
-      <div class="hero__bg"></div>
+      <div class="hero__mesh"></div>
+      <div class="hero__grid-overlay"></div>
       <div class="container">
         <div class="hero__content">
-          <h1 class="hero__title">Functionland DePIN: <span class="text-primary">Own the Cloud</span> | Earn Crypto with FxBlox</h1>
+          <h1 class="hero__title">Functionland DePIN: <span class="gradient-text">Own the Cloud</span> | Earn Crypto with FxBlox</h1>
           <p class="hero__subtitle">The first DePIN blockchain platform for decentralized data storage. Own your data with FxBlox hardware, earn crypto rewards, and join 900+ nodes powering the network.</p>
           <div class="hero__buttons">
-            <a href="fxblox-device/" class="btn btn--primary btn--lg">Get FxBlox</a>
-            <a href="ecosystem/" class="btn btn--outline btn--lg">Explore Ecosystem</a>
+            <a href="fxblox-device/" class="btn btn--primary btn--lg btn--arrow">Get FxBlox</a>
+            <a href="ecosystem/" class="btn btn--glass btn--lg">Explore Ecosystem</a>
           </div>
         </div>
       </div>
@@ -83,12 +84,14 @@
 
     <!-- Partner Logos Carousel -->
     <section class="partners">
-      <div class="carousel">
-        <div class="carousel__track">
-          <img src="assets/images/partners/fulama.png" alt="FULAMA" class="carousel__item" height="48" loading="lazy">
-          <img src="assets/images/partners/dorahacks.png" alt="DoraHacks" class="carousel__item" height="48" loading="lazy">
-          <img src="assets/images/partners/iotex.png" alt="IoTeX" class="carousel__item" height="48" loading="lazy">
-          <img src="assets/images/partners/ct.png" alt="CoinTelegraph" class="carousel__item" height="48" loading="lazy">
+      <div class="partners__track-wrap glass">
+        <div class="carousel">
+          <div class="carousel__track">
+            <img src="assets/images/partners/fulama.png" alt="FULAMA" class="carousel__item" height="48" loading="lazy">
+            <img src="assets/images/partners/dorahacks.png" alt="DoraHacks" class="carousel__item" height="48" loading="lazy">
+            <img src="assets/images/partners/iotex.png" alt="IoTeX" class="carousel__item" height="48" loading="lazy">
+            <img src="assets/images/partners/ct.png" alt="CoinTelegraph" class="carousel__item" height="48" loading="lazy">
+          </div>
         </div>
       </div>
     </section>
@@ -96,38 +99,50 @@
     <!-- Features -->
     <section class="features section">
       <div class="container">
-        <div class="section__header">
+        <div class="section__header fade-up">
           <h2 class="section__title">Why Functionland?</h2>
           <p class="section__subtitle">Super fast, super low cost, super green, super decentralized. Just all round super.</p>
         </div>
         <div class="features__grid">
-          <div class="feature-card">
-            <img src="assets/images/icons/decentralized.svg" alt="Decentralized" class="feature-card__icon" loading="lazy">
+          <div class="feature-card fade-up">
+            <div class="feature-card__icon-wrap">
+              <img src="assets/images/icons/decentralized.svg" alt="Decentralized" class="feature-card__icon" loading="lazy">
+            </div>
             <h3 class="feature-card__title">Highly Decentralized</h3>
             <p class="feature-card__text">Running on individually-owned nodes, Functionland is highly secure and decentralized.</p>
           </div>
-          <div class="feature-card">
-            <img src="assets/images/icons/scalable.svg" alt="Scalable" class="feature-card__icon" loading="lazy">
+          <div class="feature-card fade-up">
+            <div class="feature-card__icon-wrap">
+              <img src="assets/images/icons/scalable.svg" alt="Scalable" class="feature-card__icon" loading="lazy">
+            </div>
             <h3 class="feature-card__title">Scalable Storage</h3>
             <p class="feature-card__text">Easily handle huge amounts of data. Simply plug another disk to any node to expand capacity.</p>
           </div>
-          <div class="feature-card">
-            <img src="assets/images/icons/modular.svg" alt="Cross Platform" class="feature-card__icon" loading="lazy">
+          <div class="feature-card fade-up">
+            <div class="feature-card__icon-wrap">
+              <img src="assets/images/icons/modular.svg" alt="Cross Platform" class="feature-card__icon" loading="lazy">
+            </div>
             <h3 class="feature-card__title">Cross Platform</h3>
             <p class="feature-card__text">The Fula Storage network runs on any Windows or Linux device with just one click to install.</p>
           </div>
-          <div class="feature-card">
-            <img src="assets/images/icons/environment.svg" alt="Eco-Friendly" class="feature-card__icon" loading="lazy">
+          <div class="feature-card fade-up">
+            <div class="feature-card__icon-wrap">
+              <img src="assets/images/icons/environment.svg" alt="Eco-Friendly" class="feature-card__icon" loading="lazy">
+            </div>
             <h3 class="feature-card__title">Environmentally Friendly</h3>
             <p class="feature-card__text">FxBlox is a low-power device that costs under $1 a month to run and only needs air for cooling.</p>
           </div>
-          <div class="feature-card">
-            <img src="assets/images/icons/low-cost.svg" alt="Low Cost" class="feature-card__icon" loading="lazy">
+          <div class="feature-card fade-up">
+            <div class="feature-card__icon-wrap">
+              <img src="assets/images/icons/low-cost.svg" alt="Low Cost" class="feature-card__icon" loading="lazy">
+            </div>
             <h3 class="feature-card__title">Low Cost Storage</h3>
             <p class="feature-card__text">Up to 2x cheaper than centralized providers and up to 10x cheaper than decentralized alternatives.</p>
           </div>
-          <div class="feature-card">
-            <img src="assets/images/icons/plugin.svg" alt="Beyond Storage" class="feature-card__icon" loading="lazy">
+          <div class="feature-card fade-up">
+            <div class="feature-card__icon-wrap">
+              <img src="assets/images/icons/plugin.svg" alt="Beyond Storage" class="feature-card__icon" loading="lazy">
+            </div>
             <h3 class="feature-card__title">Beyond Storage</h3>
             <p class="feature-card__text">Run other DePIN protocols, create a decentralized CDN, and provide GPU computing for AI applications.</p>
           </div>
@@ -141,25 +156,28 @@
         <img src="assets/images/home/node-map.jpg" alt="Node network map" loading="lazy">
       </div>
       <div class="container">
-        <div class="node-network__content">
+        <div class="node-network__content fade-up">
           <h2 class="node-network__title">Join The Largest User-Owned Data Economy</h2>
           <p class="node-network__subtitle">Upgrade from a renter to an owner and lead the next generation of cloud.</p>
           <div class="stats">
-            <div class="stat">
+            <div class="stat glass stat--glass">
               <div class="stat__number" data-counter="900" data-suffix="+">0</div>
+              <div class="stat__accent"></div>
               <div class="stat__label">Active Nodes</div>
             </div>
-            <div class="stat">
+            <div class="stat glass stat--glass">
               <div class="stat__number" data-counter="50" data-suffix="+ PB">0</div>
+              <div class="stat__accent"></div>
               <div class="stat__label">Storage Capacity</div>
             </div>
-            <div class="stat">
+            <div class="stat glass stat--glass">
               <div class="stat__number" data-counter="30" data-suffix="+">0</div>
+              <div class="stat__accent"></div>
               <div class="stat__label">Countries</div>
             </div>
           </div>
           <div class="mt-3">
-            <a href="live-map/" class="btn btn--primary btn--lg">View Live Map</a>
+            <a href="live-map/" class="btn btn--primary btn--lg btn--arrow">View Live Map</a>
           </div>
         </div>
       </div>
@@ -168,7 +186,7 @@
     <!-- Product Showcase -->
     <section class="showcase section">
       <div class="container">
-        <div class="showcase__item split">
+        <div class="showcase__item split fade-up">
           <div class="split__media">
             <img src="assets/images/home/fxfotos2.jpg" alt="FxFotos - Decentralized photo storage" loading="lazy">
           </div>
@@ -176,12 +194,12 @@
             <h2>Your Photos, Your Cloud</h2>
             <p>FxFotos is a gallery app that syncs your media files with the Fula decentralized cloud. Your data stays yours, with no centralized servers.</p>
             <div class="mt-2">
-              <a href="use-apps/" class="btn btn--primary">Explore Apps</a>
+              <a href="use-apps/" class="btn btn--primary btn--arrow">Explore Apps</a>
             </div>
           </div>
         </div>
 
-        <div class="showcase__item split split--reverse">
+        <div class="showcase__item split split--reverse fade-up">
           <div class="split__media">
             <img src="assets/images/home/expandable.jpg" alt="FxBlox expandable hardware" loading="lazy">
           </div>
@@ -189,12 +207,12 @@
             <h2>Expandable Hardware</h2>
             <p>FxBlox is designed to grow with you. Add storage, expansion cards, and custom modules to build the node that fits your needs.</p>
             <div class="mt-2">
-              <a href="fxblox-device/" class="btn btn--primary">Learn More</a>
+              <a href="fxblox-device/" class="btn btn--primary btn--arrow">Learn More</a>
             </div>
           </div>
         </div>
 
-        <div class="showcase__item split">
+        <div class="showcase__item split fade-up">
           <div class="split__media">
             <img src="assets/images/home/woman-cafe-mockup.jpg" alt="Mobile app experience" loading="lazy">
           </div>
@@ -202,12 +220,12 @@
             <h2>Web2 Experience, Web3 Power</h2>
             <p>Use familiar apps powered by decentralized infrastructure. No crypto knowledge needed &mdash; just install and go.</p>
             <div class="mt-2">
-              <a href="use-apps/" class="btn btn--primary">Get Started</a>
+              <a href="use-apps/" class="btn btn--primary btn--arrow">Get Started</a>
             </div>
           </div>
         </div>
 
-        <div class="showcase__item split split--reverse">
+        <div class="showcase__item split split--reverse fade-up">
           <div class="split__media">
             <img src="assets/images/home/production.jpg" alt="FxBlox production" loading="lazy">
           </div>
@@ -215,7 +233,7 @@
             <h2>Built for Production</h2>
             <p>FxBlox hardware is designed by Yves Behar, hailed by Forbes as the most influential industrial designer. Quality you can see and feel.</p>
             <div class="mt-2">
-              <a href="fxblox-device/" class="btn btn--primary">See FxBlox</a>
+              <a href="fxblox-device/" class="btn btn--primary btn--arrow">See FxBlox</a>
             </div>
           </div>
         </div>
@@ -225,10 +243,12 @@
     <!-- CTA Section -->
     <section class="cta-section">
       <div class="container">
-        <h2 class="cta-section__title">Ready to Own the Cloud?</h2>
-        <p class="cta-section__text">Join thousands of node operators earning crypto rewards while powering the decentralized future.</p>
-        <div>
-          <a href="https://shop.fx.land" class="btn btn--white btn--lg" target="_blank" rel="noopener">Get FxBlox Now</a>
+        <div class="fade-up">
+          <h2 class="cta-section__title">Ready to Own the Cloud?</h2>
+          <p class="cta-section__text">Join thousands of node operators earning crypto rewards while powering the decentralized future.</p>
+          <div>
+            <a href="https://shop.fx.land" class="btn btn--glass btn--lg btn--arrow" target="_blank" rel="noopener">Get FxBlox Now</a>
+          </div>
         </div>
       </div>
     </section>
@@ -316,5 +336,6 @@
   <script src="js/analytics.js"></script>
   <script src="js/carousel.js"></script>
   <script src="js/counter.js"></script>
+  <script src="js/scroll-reveal.js"></script>
 </body>
 </html>

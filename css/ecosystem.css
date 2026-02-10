@@ -42,7 +42,7 @@
 }
 
 .app-type-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
 }
 
 .app-type-card__img {
@@ -88,7 +88,7 @@
 }
 
 .fundamental-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
   box-shadow: var(--shadow-lg);
 }
 

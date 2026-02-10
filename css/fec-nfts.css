@@ -41,7 +41,7 @@
 }
 
 .benefit-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
   box-shadow: var(--shadow-lg);
 }
 
