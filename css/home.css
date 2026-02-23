@@ -1246,7 +1246,7 @@
 
 /* Weekly Briefing (Pulse) */
 .pulse {
-  padding: var(--spacing-3xl) 0;
+  padding: var(--spacing-lg) 0;
   display: none;
 }
 
@@ -1315,7 +1315,7 @@
 
 /* Latest News (Twitter Cards — Carousel) */
 .news {
-  padding: var(--spacing-3xl) 0;
+  padding: var(--spacing-lg) 0;
   background: var(--color-light-bg);
   display: none;
 }
