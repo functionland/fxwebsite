@@ -10,6 +10,9 @@
     .then(function (data) {
       if (!data.briefing) return;
 
+      // Strip <cite> tags and other markup from Claude's response
+      var briefing = stripTags(data.briefing);
+
       var weekLabel = '';
       if (data.week_of) {
         try {
@@ -33,9 +36,9 @@
 
       container.innerHTML =
         '<div class="pulse__meta">' + escapeHtml(weekLabel) + '</div>'
-        + '<h2 class="pulse__headline">' + escapeHtml(data.headline) + '</h2>'
-        + '<p class="pulse__subtitle">' + escapeHtml(data.subtitle) + '</p>'
-        + '<p class="pulse__briefing">' + escapeHtml(data.briefing) + '</p>'
+        + '<h2 class="pulse__headline">' + escapeHtml(stripTags(data.headline)) + '</h2>'
+        + '<p class="pulse__subtitle">' + escapeHtml(stripTags(data.subtitle)) + '</p>'
+        + '<p class="pulse__briefing">' + escapeHtml(briefing) + '</p>'
         + sourcesHtml;
 
       section.classList.add('pulse--loaded');
@@ -43,6 +46,10 @@
     .catch(function () {
       // Silently fail — section stays hidden
     });
+
+  function stripTags(str) {
+    return str.replace(/<cite[^>]*>/gi, '').replace(/<\/cite>/gi, '').replace(/<[^>]+>/g, '');
+  }
 
   function escapeHtml(str) {
     var div = document.createElement('div');

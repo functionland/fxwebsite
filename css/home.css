@@ -1260,8 +1260,6 @@
   border-radius: var(--radius-lg);
   padding: var(--spacing-xl) var(--spacing-2xl);
   box-shadow: var(--shadow-sm);
-  max-width: 800px;
-  margin: 0 auto;
 }
 
 .pulse__meta {
