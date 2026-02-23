@@ -245,17 +245,17 @@ jobs:
           {"headline": "...", "subtitle": "...", "briefing": "...", "sources": ["url1", "url2"]}"""
 
               request_body = json.dumps({
-                  "model": "claude-opus-4-6",
+                  "model": "claude-sonnet-4-6",
                   "max_tokens": 1024,
                   "system": system_prompt,
-                  "tools": [{"type": "web_search_20250305", "name": "web_search", "max_uses": 5}],
+                  "tools": [{"type": "web_search_20250305", "max_uses": 5}],
                   "messages": [{"role": "user", "content": user_context}]
               }).encode()
 
               headers = {
                   "Content-Type": "application/json",
                   "X-Api-Key": api_key,
-                  "Anthropic-Version": "2025-04-15"
+                  "Anthropic-Version": "2025-01-24"
               }
 
               req = urllib.request.Request("https://api.anthropic.com/v1/messages", data=request_body, headers=headers, method="POST")
@@ -289,6 +289,9 @@ jobs:
                       "sources": briefing_data.get("sources", [])
                   }
                   print("Claude briefing generated successfully")
+              except urllib.error.HTTPError as e:
+                  error_body = e.read().decode() if e.fp else ""
+                  print(f"Claude API call failed: {e} — {error_body}")
               except Exception as e:
                   print(f"Claude API call failed: {e}")
                   pulse_data = {
