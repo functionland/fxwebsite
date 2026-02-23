@@ -1288,7 +1288,6 @@
   font-size: var(--font-size-base);
   color: var(--color-text);
   line-height: 1.8;
-  max-width: 65ch;
 }
 
 .pulse__sources {
