@@ -7,7 +7,7 @@
   var nextBtn = section.querySelector('.ig-feed__next');
   if (!track) return;
 
-  fetch('assets/data/instagram.json')
+  fetch('/assets/data/instagram.json')
     .then(function (res) { return res.json(); })
     .then(function (data) {
       if (!data.posts || !data.posts.length) {

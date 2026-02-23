@@ -5,7 +5,7 @@
   var container = document.getElementById('project-pulse');
   if (!container) return;
 
-  fetch('assets/data/pulse.json')
+  fetch('/assets/data/pulse.json')
     .then(function (res) { return res.json(); })
     .then(function (data) {
       if (!data.briefing) return;

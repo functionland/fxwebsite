@@ -6,7 +6,7 @@
   // Try to load live node count before animating
   var nodesEl = document.querySelector('[data-stat="nodes"]');
   if (nodesEl) {
-    fetch('assets/data/network.json')
+    fetch('/assets/data/network.json')
       .then(function (res) { return res.json(); })
       .then(function (data) {
         if (data && data.total_nodes) {

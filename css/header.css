@@ -217,7 +217,7 @@
     max-height: 0;
   }
 
-  .nav__dropdown.active {
+  .nav__item > .nav__dropdown.active {
     max-height: 600px;
   }
 

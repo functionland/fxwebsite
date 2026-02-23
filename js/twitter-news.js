@@ -2,22 +2,23 @@
   var section = document.querySelector('.news');
   if (!section) return;
 
-  var grid = document.getElementById('twitter-news');
-  if (!grid) return;
+  var track = document.getElementById('twitter-news');
+  var prevBtn = section.querySelector('.news__prev');
+  var nextBtn = section.querySelector('.news__next');
+  if (!track) return;
 
-  fetch('assets/data/twitter-news.json')
+  fetch('/assets/data/twitter-news.json')
     .then(function (res) { return res.json(); })
     .then(function (data) {
       if (!data.posts || !data.posts.length) return;
 
-      var posts = data.posts.slice(0, 4);
       var html = '';
-      posts.forEach(function (post) {
+      data.posts.forEach(function (post) {
         var title = post.title || '';
         var shortTitle = title.length > 120 ? title.substring(0, 120) + '...' : title;
         var date = formatRelativeDate(post.date);
         var imgHtml = post.image
-          ? '<img src="' + escapeAttr(post.image) + '" alt="" class="news__card-img" loading="lazy">'
+          ? '<img src="/' + escapeAttr(post.image) + '" alt="" class="news__card-img" loading="lazy">'
           : '<div class="news__card-img news__card-img--placeholder"></div>';
 
         html += '<a href="' + escapeAttr(post.link) + '" target="_blank" rel="noopener" class="news__card">'
@@ -28,8 +29,22 @@
           + '</div>'
           + '</a>';
       });
-      grid.innerHTML = html;
+      track.innerHTML = html;
       section.classList.add('news--loaded');
+
+      // Arrow navigation
+      if (prevBtn && nextBtn) {
+        var scrollAmount = function () {
+          var card = track.querySelector('.news__card');
+          return card ? card.offsetWidth + 16 : 300;
+        };
+        prevBtn.addEventListener('click', function () {
+          track.scrollBy({ left: -scrollAmount(), behavior: 'smooth' });
+        });
+        nextBtn.addEventListener('click', function () {
+          track.scrollBy({ left: scrollAmount(), behavior: 'smooth' });
+        });
+      }
     })
     .catch(function () {
       // Silently fail — section stays hidden
