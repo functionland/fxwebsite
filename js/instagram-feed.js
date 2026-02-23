@@ -20,7 +20,7 @@
         var shortCaption = caption.length > 80 ? caption.substring(0, 80) + '...' : caption;
         html += '<a href="' + post.permalink + '" target="_blank" rel="noopener" class="ig-feed__card">'
           + '<div class="ig-feed__img-wrap">'
-          + '<img src="' + post.image + '" alt="' + shortCaption.replace(/"/g, '&quot;') + '" class="ig-feed__img" loading="lazy">'
+          + '<img src="/' + post.image + '" alt="' + shortCaption.replace(/"/g, '&quot;') + '" class="ig-feed__img" loading="lazy">'
           + '<div class="ig-feed__caption">'
           + '<p class="ig-feed__caption-short">' + escapeHtml(shortCaption) + '</p>'
           + '<p class="ig-feed__caption-full">' + escapeHtml(caption) + '</p>'
