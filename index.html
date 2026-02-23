@@ -303,7 +303,7 @@
             <p class="node-network__subtitle">Upgrade from a renter to an owner and lead the next generation of cloud.</p>
             <div class="stats">
               <div class="stat stat--glass">
-                <div class="stat__number" data-counter="900" data-suffix="+">0</div>
+                <div class="stat__number" data-counter="900" data-suffix="+" data-stat="nodes">0</div>
                 <div class="stat__accent"></div>
                 <div class="stat__label">Active Nodes</div>
               </div>
@@ -476,6 +476,28 @@
           <button class="ig-feed__next" aria-label="Next">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Weekly Briefing -->
+    <section class="pulse section">
+      <div class="container">
+        <div class="pulse__content fade-up" id="project-pulse">
+          <!-- Populated by pulse.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Latest News -->
+    <section class="news section">
+      <div class="container">
+        <div class="section__header fade-up">
+          <h2 class="section__title">Latest <span class="gradient-text">News</span></h2>
+          <p class="section__subtitle">Updates from our team</p>
+        </div>
+        <div class="news__grid fade-up" id="twitter-news">
+          <!-- Populated by twitter-news.js -->
         </div>
       </div>
     </section>
@@ -751,6 +773,8 @@
   <script src="js/carousel.js" defer></script>
   <script src="js/counter.js" defer></script>
   <script src="js/instagram-feed.js" defer></script>
+  <script src="js/pulse.js" defer></script>
+  <script src="js/twitter-news.js" defer></script>
   <script src="js/scroll-reveal.js" defer></script>
   <script src="js/showcase-carousel.js" defer></script>
   <script src="js/hero-instagram.js" defer data-cfasync="false"></script>

@@ -1,0 +1,337 @@
+name: Weekly Auto-Update
+
+on:
+  schedule:
+    - cron: '0 8 * * 1'  # Every Monday at 8:00 AM UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch RSS and network data, generate briefing
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python3 << 'PYEOF'
+          import xml.etree.ElementTree as ET
+          import json, urllib.request, urllib.error, os, re, hashlib
+          from datetime import datetime, timedelta, timezone
+
+          # ── 1. Fetch RSS feed ──
+          RSS_URL = "https://rss.app/feeds/6vTVMPaFHQfRX39J.xml"
+          print("Fetching RSS feed...")
+          try:
+              req = urllib.request.Request(RSS_URL, headers={"User-Agent": "Mozilla/5.0"})
+              with urllib.request.urlopen(req, timeout=30) as resp:
+                  rss_xml = resp.read()
+          except Exception as e:
+              print(f"RSS fetch failed: {e}")
+              rss_xml = None
+
+          posts = []
+          if rss_xml:
+              root = ET.fromstring(rss_xml)
+              ns = {"atom": "http://www.w3.org/2005/Atom", "media": "http://search.yahoo.com/mrss/"}
+              # Try RSS 2.0 format
+              for item in root.findall(".//item"):
+                  title_el = item.find("title")
+                  link_el = item.find("link")
+                  pub_el = item.find("pubDate")
+                  # Try media:content or enclosure for image
+                  img = None
+                  media_el = item.find("media:content", ns)
+                  if media_el is not None:
+                      img = media_el.get("url")
+                  if not img:
+                      enc_el = item.find("enclosure")
+                      if enc_el is not None and "image" in (enc_el.get("type") or ""):
+                          img = enc_el.get("url")
+                  if not img:
+                      # Try to extract image from description HTML
+                      desc_el = item.find("description")
+                      if desc_el is not None and desc_el.text:
+                          m = re.search(r'<img[^>]+src=["\']([^"\']+)["\']', desc_el.text)
+                          if m:
+                              img = m.group(1)
+
+                  title = title_el.text.strip() if title_el is not None and title_el.text else ""
+                  link = link_el.text.strip() if link_el is not None and link_el.text else ""
+                  pub = pub_el.text.strip() if pub_el is not None and pub_el.text else ""
+
+                  if title or link:
+                      posts.append({"title": title, "link": link, "date": pub, "image_url": img})
+
+              # Try Atom format if no items found
+              if not posts:
+                  for entry in root.findall("atom:entry", ns):
+                      title_el = entry.find("atom:title", ns)
+                      link_el = entry.find("atom:link", ns)
+                      pub_el = entry.find("atom:published", ns) or entry.find("atom:updated", ns)
+                      title = title_el.text.strip() if title_el is not None and title_el.text else ""
+                      link = link_el.get("href", "") if link_el is not None else ""
+                      pub = pub_el.text.strip() if pub_el is not None and pub_el.text else ""
+                      if title or link:
+                          posts.append({"title": title, "link": link, "date": pub, "image_url": None})
+
+          print(f"Parsed {len(posts)} posts from RSS")
+
+          # ── 2. Download tweet images ──
+          os.makedirs("assets/images/twitter", exist_ok=True)
+          for post in posts:
+              if post.get("image_url"):
+                  url_hash = hashlib.md5(post["image_url"].encode()).hexdigest()[:12]
+                  ext = ".jpg"
+                  m = re.search(r'\.(jpg|jpeg|png|gif|webp)', post["image_url"].lower())
+                  if m:
+                      ext = "." + m.group(1)
+                  local_path = f"assets/images/twitter/{url_hash}{ext}"
+                  if not os.path.exists(local_path):
+                      try:
+                          req = urllib.request.Request(post["image_url"], headers={"User-Agent": "Mozilla/5.0"})
+                          with urllib.request.urlopen(req, timeout=15) as img_resp:
+                              with open(local_path, "wb") as f:
+                                  f.write(img_resp.read())
+                          print(f"  Downloaded: {local_path}")
+                      except Exception as e:
+                          print(f"  Image download failed: {e}")
+                          local_path = None
+                  post["image"] = local_path
+              else:
+                  post["image"] = None
+
+          # ── 3. Write twitter-news.json ──
+          now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+          twitter_data = {
+              "updated": now_iso,
+              "posts": [
+                  {
+                      "title": p["title"],
+                      "link": p["link"],
+                      "date": p["date"],
+                      "image": p["image"]
+                  }
+                  for p in posts
+              ]
+          }
+          with open("assets/data/twitter-news.json", "w") as f:
+              json.dump(twitter_data, f, indent=2)
+          print("Wrote twitter-news.json")
+
+          # ── 4. Fetch network node count ──
+          NODES_URL = "https://cluster.1.pools.functionyard.fula.network/nodes"
+          total_nodes = 900  # fallback
+          try:
+              req = urllib.request.Request(NODES_URL, headers={"User-Agent": "Mozilla/5.0"})
+              with urllib.request.urlopen(req, timeout=15) as resp:
+                  nodes_data = resp.read()
+                  # The endpoint might return a JSON array or object
+                  parsed = json.loads(nodes_data)
+                  if isinstance(parsed, list):
+                      total_nodes = len(parsed)
+                  elif isinstance(parsed, dict) and "count" in parsed:
+                      total_nodes = parsed["count"]
+                  elif isinstance(parsed, dict):
+                      total_nodes = len(parsed)
+              print(f"Network nodes: {total_nodes}")
+          except Exception as e:
+              print(f"Node count fetch failed, using fallback: {e}")
+
+          network_data = {"updated": now_iso, "total_nodes": total_nodes}
+          with open("assets/data/network.json", "w") as f:
+              json.dump(network_data, f, indent=2)
+          print("Wrote network.json")
+
+          # ── 5. Determine content seed for Claude briefing ──
+          now_utc = datetime.now(timezone.utc)
+          seven_days_ago = now_utc - timedelta(days=7)
+
+          def parse_date(d):
+              for fmt in ["%a, %d %b %Y %H:%M:%S %z", "%Y-%m-%dT%H:%M:%S%z", "%Y-%m-%dT%H:%M:%SZ"]:
+                  try:
+                      return datetime.strptime(d, fmt).replace(tzinfo=timezone.utc) if "Z" in fmt else datetime.strptime(d, fmt)
+                  except ValueError:
+                      continue
+              return None
+
+          recent_posts = []
+          for p in posts:
+              dt = parse_date(p["date"])
+              if dt and dt >= seven_days_ago:
+                  recent_posts.append(p)
+
+          if recent_posts:
+              seed_posts = recent_posts
+              prompt_mode = "recent"
+          else:
+              seed_posts = posts[:3]
+              prompt_mode = "quiet"
+
+          print(f"Content seed: {len(seed_posts)} posts ({prompt_mode} mode)")
+
+          # ── 6. Load previous pulse for continuity ──
+          prev_summary = ""
+          if os.path.exists("assets/data/pulse.json"):
+              try:
+                  with open("assets/data/pulse.json") as f:
+                      prev_pulse = json.load(f)
+                  prev_summary = prev_pulse.get("briefing", "")
+              except Exception:
+                  pass
+
+          # ── 7. Call Claude API with web search ──
+          api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+          if not api_key:
+              print("No ANTHROPIC_API_KEY set, skipping briefing generation")
+              pulse_data = {
+                  "updated": now_iso,
+                  "week_of": (now_utc - timedelta(days=now_utc.weekday())).strftime("%Y-%m-%d"),
+                  "headline": "Weekly Update",
+                  "subtitle": "Check back for this week's briefing.",
+                  "briefing": "",
+                  "sources": []
+              }
+          else:
+              seed_text = "\n".join([f"- [{p['date']}] {p['title']}" for p in seed_posts])
+
+              if prompt_mode == "recent":
+                  user_context = f"""## This Week's Tweets from @functionland
+          {seed_text}
+
+          ## Network Stats
+          Active nodes: {total_nodes}
+
+          ## Previous Briefing (for continuity, do not repeat)
+          {prev_summary[:500]}"""
+              else:
+                  user_context = f"""## Recent Tweets from @functionland (no new posts this week)
+          {seed_text}
+
+          ## Network Stats
+          Active nodes: {total_nodes}
+
+          ## Previous Briefing (for continuity, do not repeat)
+          {prev_summary[:500]}
+
+          Note: There were no new tweets this week. Based on Functionland's recent activity and current industry developments, write a briefing on where the project stands in the broader DePIN landscape."""
+
+              system_prompt = """You are a senior technology journalist writing a weekly briefing for Functionland's website. Your style is authoritative, clear, and concise — like a Wall Street Journal technology correspondent.
+
+          Your task:
+          1. Review the provided tweets and network data from Functionland this week
+          2. Use web search to research relevant context: DePIN industry trends, competing projects, regulatory developments, technology breakthroughs related to the topics in the tweets
+          3. Write a 150-250 word weekly briefing that:
+             - Leads with Functionland's most newsworthy update from the tweets
+             - Provides industry context from your research (why this matters in the broader DePIN/Web3 landscape)
+             - Includes specific facts, numbers, or comparisons from your research
+             - Ends with a forward-looking sentence about what to watch next
+          4. Also generate a short headline (max 10 words) and a one-sentence subtitle
+
+          Rules:
+          - Never fabricate statistics or quotes
+          - If you cannot verify something, don't include it
+          - Do not use exclamation marks or hype language
+          - Write for an informed but not expert audience
+          - Keep the tone professional and credible
+          - Every claim should be grounded in the tweet data or your web research
+
+          Respond with ONLY valid JSON in this exact format:
+          {"headline": "...", "subtitle": "...", "briefing": "...", "sources": ["url1", "url2"]}"""
+
+              request_body = json.dumps({
+                  "model": "claude-opus-4-6",
+                  "max_tokens": 1024,
+                  "system": system_prompt,
+                  "tools": [{"type": "web_search_20250305", "name": "web_search", "max_uses": 5}],
+                  "messages": [{"role": "user", "content": user_context}]
+              }).encode()
+
+              headers = {
+                  "Content-Type": "application/json",
+                  "X-Api-Key": api_key,
+                  "Anthropic-Version": "2025-04-15"
+              }
+
+              req = urllib.request.Request("https://api.anthropic.com/v1/messages", data=request_body, headers=headers, method="POST")
+              print("Calling Claude API with web search...")
+
+              try:
+                  with urllib.request.urlopen(req, timeout=120) as resp:
+                      result = json.loads(resp.read())
+
+                  # Extract text from response content blocks
+                  text_content = ""
+                  for block in result.get("content", []):
+                      if block.get("type") == "text":
+                          text_content += block["text"]
+
+                  # Parse JSON from response
+                  json_match = re.search(r'\{[^{}]*"headline"[^{}]*\}', text_content, re.DOTALL)
+                  if json_match:
+                      briefing_data = json.loads(json_match.group())
+                  else:
+                      # Try parsing the entire text as JSON
+                      briefing_data = json.loads(text_content.strip())
+
+                  week_of = (now_utc - timedelta(days=now_utc.weekday())).strftime("%Y-%m-%d")
+                  pulse_data = {
+                      "updated": now_iso,
+                      "week_of": week_of,
+                      "headline": briefing_data.get("headline", "Weekly Update"),
+                      "subtitle": briefing_data.get("subtitle", ""),
+                      "briefing": briefing_data.get("briefing", ""),
+                      "sources": briefing_data.get("sources", [])
+                  }
+                  print("Claude briefing generated successfully")
+              except Exception as e:
+                  print(f"Claude API call failed: {e}")
+                  pulse_data = {
+                      "updated": now_iso,
+                      "week_of": (now_utc - timedelta(days=now_utc.weekday())).strftime("%Y-%m-%d"),
+                      "headline": "Weekly Update",
+                      "subtitle": "Check back for this week's briefing.",
+                      "briefing": "",
+                      "sources": []
+                  }
+
+          with open("assets/data/pulse.json", "w") as f:
+              json.dump(pulse_data, f, indent=2)
+          print("Wrote pulse.json")
+
+          # ── 8. Update sitemap.xml homepage lastmod ──
+          today = now_utc.strftime("%Y-%m-%d")
+          try:
+              with open("sitemap.xml", "r") as f:
+                  sitemap = f.read()
+              import re as re2
+              sitemap = re2.sub(
+                  r'(<loc>https://fx\.land/</loc>\s*<lastmod>)\d{4}-\d{2}-\d{2}(</lastmod>)',
+                  rf'\g<1>{today}\2',
+                  sitemap
+              )
+              with open("sitemap.xml", "w") as f:
+                  f.write(sitemap)
+              print(f"Updated sitemap.xml homepage lastmod to {today}")
+          except Exception as e:
+              print(f"Sitemap update failed: {e}")
+
+          print("Done!")
+          PYEOF
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/data/twitter-news.json assets/data/network.json assets/data/pulse.json assets/images/twitter/ sitemap.xml
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: weekly auto-update ($(date -u +%Y-%m-%d))"
+            git push
+          fi
