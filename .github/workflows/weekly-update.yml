@@ -255,7 +255,7 @@ jobs:
               headers = {
                   "Content-Type": "application/json",
                   "X-Api-Key": api_key,
-                  "Anthropic-Version": "2025-01-24"
+                  "Anthropic-Version": "2023-06-01"
               }
 
               req = urllib.request.Request("https://api.anthropic.com/v1/messages", data=request_body, headers=headers, method="POST")
@@ -292,6 +292,14 @@ jobs:
               except urllib.error.HTTPError as e:
                   error_body = e.read().decode() if e.fp else ""
                   print(f"Claude API call failed: {e} — {error_body}")
+                  pulse_data = {
+                      "updated": now_iso,
+                      "week_of": (now_utc - timedelta(days=now_utc.weekday())).strftime("%Y-%m-%d"),
+                      "headline": "Weekly Update",
+                      "subtitle": "Check back for this week's briefing.",
+                      "briefing": "",
+                      "sources": []
+                  }
               except Exception as e:
                   print(f"Claude API call failed: {e}")
                   pulse_data = {
