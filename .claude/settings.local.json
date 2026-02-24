@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "WebFetch(domain:fx.land)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "WebSearch",
+      "WebFetch(domain:rss.app)",
+      "WebFetch(domain:shop.fx.land)",
+      "Bash(powershell:*)"
     ]
   }
 }

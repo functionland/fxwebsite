@@ -7,18 +7,24 @@
   var nextBtn = section.querySelector('.news__next');
   if (!track) return;
 
-  fetch('/assets/data/twitter-news.json')
-    .then(function (res) { return res.json(); })
-    .then(function (data) {
-      if (!data.posts || !data.posts.length) return;
+  var FEED_URL = 'https://rss.app/feeds/v1.1/6vTVMPaFHQfRX39J.json';
+  var LOCAL_FALLBACK = 'assets/data/twitter-news.json';
+
+  fetchFeed(FEED_URL)
+    .catch(function () {
+      // Fallback to local pre-generated file
+      return fetchLocal(LOCAL_FALLBACK);
+    })
+    .then(function (posts) {
+      if (!posts || !posts.length) return;
 
       var html = '';
-      data.posts.forEach(function (post) {
+      posts.forEach(function (post) {
         var title = post.title || '';
         var shortTitle = title.length > 120 ? title.substring(0, 120) + '...' : title;
         var date = formatRelativeDate(post.date);
         var imgHtml = post.image
-          ? '<img src="/' + escapeAttr(post.image) + '" alt="" class="news__card-img" loading="lazy">'
+          ? '<img src="' + escapeAttr(post.image) + '" alt="" class="news__card-img" loading="lazy">'
           : '<div class="news__card-img news__card-img--placeholder"></div>';
 
         html += '<a href="' + escapeAttr(post.link) + '" target="_blank" rel="noopener" class="news__card">'
@@ -46,9 +52,49 @@
         });
       }
     })
-    .catch(function () {
-      // Silently fail — section stays hidden
+    .catch(function (err) {
+      console.warn('Latest News: failed to load feed', err);
     });
+
+  /** Parse JSON Feed 1.1 from rss.app */
+  function fetchFeed(url) {
+    return fetch(url)
+      .then(function (res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        if (!data.items || !data.items.length) return [];
+        return data.items.map(function (item) {
+          return {
+            title: item.title || item.content_text || '',
+            link: item.url || '',
+            date: item.date_published || '',
+            image: item.image || ''
+          };
+        });
+      });
+  }
+
+  /** Fallback: local pre-generated twitter-news.json */
+  function fetchLocal(url) {
+    return fetch(url)
+      .then(function (res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        if (!data.posts || !data.posts.length) return [];
+        return data.posts.map(function (post) {
+          return {
+            title: post.title || '',
+            link: post.link || '',
+            date: post.date || '',
+            image: post.image ? '/' + post.image : ''
+          };
+        });
+      });
+  }
 
   function formatRelativeDate(dateStr) {
     if (!dateStr) return '';

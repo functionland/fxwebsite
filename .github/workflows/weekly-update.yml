@@ -20,67 +20,31 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           python3 << 'PYEOF'
-          import xml.etree.ElementTree as ET
           import json, urllib.request, urllib.error, os, re, hashlib
           from datetime import datetime, timedelta, timezone
 
-          # ── 1. Fetch RSS feed ──
-          RSS_URL = "https://rss.app/feeds/6vTVMPaFHQfRX39J.xml"
-          print("Fetching RSS feed...")
+          # ── 1. Fetch JSON feed ──
+          FEED_URL = "https://rss.app/feeds/v1.1/6vTVMPaFHQfRX39J.json"
+          print("Fetching JSON feed...")
           try:
-              req = urllib.request.Request(RSS_URL, headers={"User-Agent": "Mozilla/5.0"})
+              req = urllib.request.Request(FEED_URL, headers={"User-Agent": "Mozilla/5.0"})
               with urllib.request.urlopen(req, timeout=30) as resp:
-                  rss_xml = resp.read()
+                  feed = json.loads(resp.read())
           except Exception as e:
-              print(f"RSS fetch failed: {e}")
-              rss_xml = None
+              print(f"Feed fetch failed: {e}")
+              feed = None
 
           posts = []
-          if rss_xml:
-              root = ET.fromstring(rss_xml)
-              ns = {"atom": "http://www.w3.org/2005/Atom", "media": "http://search.yahoo.com/mrss/"}
-              # Try RSS 2.0 format
-              for item in root.findall(".//item"):
-                  title_el = item.find("title")
-                  link_el = item.find("link")
-                  pub_el = item.find("pubDate")
-                  # Try media:content or enclosure for image
-                  img = None
-                  media_el = item.find("media:content", ns)
-                  if media_el is not None:
-                      img = media_el.get("url")
-                  if not img:
-                      enc_el = item.find("enclosure")
-                      if enc_el is not None and "image" in (enc_el.get("type") or ""):
-                          img = enc_el.get("url")
-                  if not img:
-                      # Try to extract image from description HTML
-                      desc_el = item.find("description")
-                      if desc_el is not None and desc_el.text:
-                          m = re.search(r'<img[^>]+src=["\']([^"\']+)["\']', desc_el.text)
-                          if m:
-                              img = m.group(1)
-
-                  title = title_el.text.strip() if title_el is not None and title_el.text else ""
-                  link = link_el.text.strip() if link_el is not None and link_el.text else ""
-                  pub = pub_el.text.strip() if pub_el is not None and pub_el.text else ""
-
+          if feed and feed.get("items"):
+              for item in feed["items"]:
+                  title = (item.get("title") or item.get("content_text") or "").strip()
+                  link = (item.get("url") or "").strip()
+                  pub = (item.get("date_published") or "").strip()
+                  img = item.get("image") or ""
                   if title or link:
                       posts.append({"title": title, "link": link, "date": pub, "image_url": img})
 
-              # Try Atom format if no items found
-              if not posts:
-                  for entry in root.findall("atom:entry", ns):
-                      title_el = entry.find("atom:title", ns)
-                      link_el = entry.find("atom:link", ns)
-                      pub_el = entry.find("atom:published", ns) or entry.find("atom:updated", ns)
-                      title = title_el.text.strip() if title_el is not None and title_el.text else ""
-                      link = link_el.get("href", "") if link_el is not None else ""
-                      pub = pub_el.text.strip() if pub_el is not None and pub_el.text else ""
-                      if title or link:
-                          posts.append({"title": title, "link": link, "date": pub, "image_url": None})
-
-          print(f"Parsed {len(posts)} posts from RSS")
+          print(f"Parsed {len(posts)} posts from feed")
 
           # ── 2. Download tweet images ──
           os.makedirs("assets/images/twitter", exist_ok=True)
@@ -153,9 +117,12 @@ jobs:
           seven_days_ago = now_utc - timedelta(days=7)
 
           def parse_date(d):
-              for fmt in ["%a, %d %b %Y %H:%M:%S %z", "%Y-%m-%dT%H:%M:%S%z", "%Y-%m-%dT%H:%M:%SZ"]:
+              # Strip milliseconds if present (e.g. ".000" in "2026-02-23T22:13:00.000Z")
+              d_clean = re.sub(r'\.\d+', '', d)
+              for fmt in ["%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%M:%S%z", "%a, %d %b %Y %H:%M:%S %z"]:
                   try:
-                      return datetime.strptime(d, fmt).replace(tzinfo=timezone.utc) if "Z" in fmt else datetime.strptime(d, fmt)
+                      dt = datetime.strptime(d_clean, fmt)
+                      return dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt
                   except ValueError:
                       continue
               return None
