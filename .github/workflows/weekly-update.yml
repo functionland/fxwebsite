@@ -278,6 +278,21 @@ jobs:
                       "sources": []
                   }
 
+          # Archive previous pulse before overwriting
+          try:
+              with open("assets/data/pulse.json", "r") as f:
+                  old_pulse = json.load(f)
+              if old_pulse.get("briefing", "").strip():
+                  archive_path = f"assets/data/history/pulse-before-{pulse_data['week_of']}.json"
+                  os.makedirs("assets/data/history", exist_ok=True)
+                  with open(archive_path, "w") as f:
+                      json.dump(old_pulse, f, indent=2)
+                  print(f"Archived previous pulse to {archive_path}")
+          except FileNotFoundError:
+              print("No existing pulse.json to archive")
+          except Exception as e:
+              print(f"Pulse archive failed (non-fatal): {e}")
+
           with open("assets/data/pulse.json", "w") as f:
               json.dump(pulse_data, f, indent=2)
           print("Wrote pulse.json")
@@ -306,7 +321,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add assets/data/twitter-news.json assets/data/network.json assets/data/pulse.json assets/images/twitter/ sitemap.xml
+          git add assets/data/twitter-news.json assets/data/network.json assets/data/pulse.json assets/data/history/ assets/images/twitter/ sitemap.xml
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
