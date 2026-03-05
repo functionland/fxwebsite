@@ -41,30 +41,35 @@
       border-radius: 12px;
       padding: 32px;
     }
+    .payment-card__header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
     .payment-card__number {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       width: 32px;
       height: 32px;
+      min-width: 32px;
       background: var(--color-primary);
       color: #fff;
       border-radius: 50%;
       font-weight: 700;
       font-size: 0.9rem;
-      margin-bottom: 12px;
     }
     .payment-card__title {
       font-size: 1.25rem;
       font-weight: 700;
-      margin-bottom: 8px;
     }
     .payment-card__detail {
-      color: var(--color-text-white-muted);
+      color: #aaa;
       line-height: 1.7;
     }
     .payment-card__detail strong {
-      color: #fff;
+      color: #ccc;
     }
     .bank-info {
       margin-top: 12px;
@@ -75,10 +80,10 @@
     }
     .bank-info p {
       margin: 4px 0;
-      color: var(--color-text-white-muted);
+      color: #aaa;
     }
     .bank-info p strong {
-      color: #fff;
+      color: #ccc;
       display: inline-block;
       min-width: 180px;
     }
@@ -143,29 +148,37 @@
 
           <!-- 1. Card Payment -->
           <div class="payment-card">
-            <div class="payment-card__number">1</div>
-            <h2 class="payment-card__title">Card Payment</h2>
+            <div class="payment-card__header">
+              <div class="payment-card__number">1</div>
+              <h2 class="payment-card__title">Card Payment</h2>
+            </div>
             <p class="payment-card__detail">Pay your invoice using a credit or debit card.</p>
           </div>
 
           <!-- 2. Interac -->
           <div class="payment-card">
-            <div class="payment-card__number">2</div>
-            <h2 class="payment-card__title">Interac e-Transfer</h2>
+            <div class="payment-card__header">
+              <div class="payment-card__number">2</div>
+              <h2 class="payment-card__title">Interac e-Transfer</h2>
+            </div>
             <p class="payment-card__detail">Send Interac e-Transfer to: <strong>functionland-inc@vaultpayments.ca</strong></p>
           </div>
 
           <!-- 3. PayPal -->
           <div class="payment-card">
-            <div class="payment-card__number">3</div>
-            <h2 class="payment-card__title">PayPal</h2>
+            <div class="payment-card__header">
+              <div class="payment-card__number">3</div>
+              <h2 class="payment-card__title">PayPal</h2>
+            </div>
             <p class="payment-card__detail">Send PayPal payment to: <strong>hi@fx.land</strong></p>
           </div>
 
           <!-- 4. EFT Transfer (CAD) -->
           <div class="payment-card">
-            <div class="payment-card__number">4</div>
-            <h2 class="payment-card__title">EFT Transfer (CAD)</h2>
+            <div class="payment-card__header">
+              <div class="payment-card__number">4</div>
+              <h2 class="payment-card__title">EFT Transfer (CAD)</h2>
+            </div>
             <div class="bank-info">
               <p><strong>Beneficiary:</strong> Functionland inc</p>
               <p><strong>Account Number:</strong> 500010027593</p>
@@ -178,8 +191,10 @@
 
           <!-- 5. SWIFT Transfer (USD) -->
           <div class="payment-card">
-            <div class="payment-card__number">5</div>
-            <h2 class="payment-card__title">SWIFT Transfer (USD)</h2>
+            <div class="payment-card__header">
+              <div class="payment-card__number">5</div>
+              <h2 class="payment-card__title">SWIFT Transfer (USD)</h2>
+            </div>
             <div class="bank-info">
               <p><strong>Beneficiary:</strong> Functionland inc</p>
               <p><strong>IBAN / Account Number:</strong> GB98TCCL04140480463411</p>
