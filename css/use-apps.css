@@ -166,6 +166,18 @@
   color: #fff;
 }
 
+.store-badge--outline {
+  background: transparent;
+  border: 1.5px solid #555;
+  color: #333;
+}
+
+.store-badge--outline:hover {
+  border-color: #000;
+  color: #000;
+  opacity: 1;
+}
+
 .store-badge svg {
   width: 20px;
   height: 20px;
