@@ -111,6 +111,34 @@
   flex: 1;
 }
 
+.app-card__features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--spacing-md);
+  display: grid;
+  gap: 0.5rem;
+}
+
+.app-card__features li {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light);
+  line-height: 1.6;
+  padding-left: 1.4rem;
+  position: relative;
+}
+
+.app-card__features li::before {
+  content: '\2713';
+  position: absolute;
+  left: 0;
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.app-card__features li strong {
+  color: var(--color-text);
+}
+
 .app-card__badges {
   display: flex;
   gap: 0.75rem;
