@@ -198,6 +198,7 @@ jobs:
              - Provides industry context from your research (why this matters in the broader DePIN/Web3 landscape)
              - Includes specific facts, numbers, or comparisons from your research
              - Ends with a forward-looking sentence about what to watch next
+             - If there are recent announcements or news or developments, focus on those instead of generic update
           4. Also generate a short headline (max 10 words) and a one-sentence subtitle
 
           Rules:
@@ -207,7 +208,7 @@ jobs:
           - Write for an informed but not expert audience
           - Keep the tone professional and credible
           - Every claim should be grounded in the tweet data or your web research
-          - It should have positive tone and be encouraging for Functionland and not with a negative tone
+          - It should have positive tone and be encouraging for Functionland focused on positive news and not with a negative tone
 
           Respond with ONLY valid JSON in this exact format:
           {"headline": "...", "subtitle": "...", "briefing": "...", "sources": ["url1", "url2"]}"""
