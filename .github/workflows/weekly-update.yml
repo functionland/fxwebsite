@@ -207,6 +207,7 @@ jobs:
           - Write for an informed but not expert audience
           - Keep the tone professional and credible
           - Every claim should be grounded in the tweet data or your web research
+          - It should have positive tone and be encouraging for Functionland and not with a negative tone
 
           Respond with ONLY valid JSON in this exact format:
           {"headline": "...", "subtitle": "...", "briefing": "...", "sources": ["url1", "url2"]}"""
