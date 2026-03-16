@@ -6,7 +6,10 @@
       "WebSearch",
       "WebFetch(domain:rss.app)",
       "WebFetch(domain:shop.fx.land)",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "Bash(python3:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)"
     ]
   }
 }

@@ -7,16 +7,22 @@
   var nextBtn = section.querySelector('.news__next');
   if (!track) return;
 
-  var FEED_URL = 'https://rss.app/feeds/v1.1/6vTVMPaFHQfRX39J.json';
-  var LOCAL_FALLBACK = 'assets/data/twitter-news.json';
-
-  fetchFeed(FEED_URL)
-    .catch(function () {
-      // Fallback to local pre-generated file
-      return fetchLocal(LOCAL_FALLBACK);
+  fetch('/assets/data/instagram.json')
+    .then(function (res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
     })
-    .then(function (posts) {
-      if (!posts || !posts.length) return;
+    .then(function (data) {
+      if (!data.posts || !data.posts.length) return;
+
+      var posts = data.posts.map(function (p) {
+        return {
+          title: p.caption || '',
+          link: p.permalink || '',
+          date: p.timestamp || '',
+          image: p.image ? '/' + p.image : ''
+        };
+      });
 
       var html = '';
       posts.forEach(function (post) {
@@ -55,46 +61,6 @@
     .catch(function (err) {
       console.warn('Latest News: failed to load feed', err);
     });
-
-  /** Parse JSON Feed 1.1 from rss.app */
-  function fetchFeed(url) {
-    return fetch(url)
-      .then(function (res) {
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        return res.json();
-      })
-      .then(function (data) {
-        if (!data.items || !data.items.length) return [];
-        return data.items.map(function (item) {
-          return {
-            title: item.title || item.content_text || '',
-            link: item.url || '',
-            date: item.date_published || '',
-            image: item.image || ''
-          };
-        });
-      });
-  }
-
-  /** Fallback: local pre-generated twitter-news.json */
-  function fetchLocal(url) {
-    return fetch(url)
-      .then(function (res) {
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        return res.json();
-      })
-      .then(function (data) {
-        if (!data.posts || !data.posts.length) return [];
-        return data.posts.map(function (post) {
-          return {
-            title: post.title || '',
-            link: post.link || '',
-            date: post.date || '',
-            image: post.image ? '/' + post.image : ''
-          };
-        });
-      });
-  }
 
   function formatRelativeDate(dateStr) {
     if (!dateStr) return '';
