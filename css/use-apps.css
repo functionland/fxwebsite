@@ -426,145 +426,52 @@
 
 .fxfiles-showcase__browser-body {
   position: relative;
-  display: block;
   width: 100%;
   aspect-ratio: 16 / 10;
   overflow: hidden;
-  cursor: pointer;
-  color: inherit;
 }
 
-/* Static site preview inside browser frame */
-.fxfiles-showcase__site-preview {
+.fxfiles-showcase__browser-body iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  background: #111;
+}
+
+.fxfiles-showcase__overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(160deg, #0d1f12 0%, #0a1628 50%, #12102a 100%);
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1.25rem;
-  padding: 2rem 1.5rem;
-  transition: background 0.4s var(--ease-out);
+  background: rgba(10, 10, 26, 0.4);
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out);
 }
 
-.fxfiles-showcase__browser-body:hover .fxfiles-showcase__site-preview {
-  background: linear-gradient(160deg, #102a16 0%, #0d1d36 50%, #18153a 100%);
+.fxfiles-showcase__overlay:hover {
+  opacity: 1;
 }
 
-.fxfiles-showcase__site-hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.fxfiles-showcase__site-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: var(--radius-lg);
-  object-fit: cover;
-  box-shadow: 0 4px 20px rgba(29, 185, 84, 0.25);
-  margin-bottom: 0.25rem;
-}
-
-.fxfiles-showcase__site-name {
-  font-size: var(--font-size-2xl);
-  font-weight: 800;
-  color: #fff;
-  letter-spacing: -0.02em;
-}
-
-.fxfiles-showcase__site-tagline {
-  font-size: var(--font-size-sm);
-  color: rgba(255, 255, 255, 0.5);
-  font-weight: 400;
-}
-
-.fxfiles-showcase__site-features {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.5rem;
-  max-width: 380px;
-}
-
-.fxfiles-showcase__chip {
-  display: inline-block;
-  background: rgba(29, 185, 84, 0.1);
-  border: 1px solid rgba(29, 185, 84, 0.2);
-  color: var(--color-primary-light);
-  font-size: 0.7rem;
-  font-weight: 600;
-  padding: 0.3rem 0.7rem;
-  border-radius: var(--radius-pill);
-  letter-spacing: 0.01em;
-  transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
-}
-
-.fxfiles-showcase__browser-body:hover .fxfiles-showcase__chip {
-  background: rgba(29, 185, 84, 0.18);
-  border-color: rgba(29, 185, 84, 0.35);
-}
-
-.fxfiles-showcase__chip:nth-child(odd) {
-  animation: chip-float 3s ease-in-out infinite;
-}
-
-.fxfiles-showcase__chip:nth-child(even) {
-  animation: chip-float 3s ease-in-out infinite reverse;
-  animation-delay: -1.5s;
-}
-
-@keyframes chip-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
-}
-
-.fxfiles-showcase__site-cta-hint {
+.fxfiles-showcase__overlay-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  color: rgba(255, 255, 255, 0.35);
-  font-size: 0.75rem;
-  font-weight: 600;
-  margin-top: 0.25rem;
-  transition: color 0.3s ease;
-}
-
-.fxfiles-showcase__site-cta-hint svg {
+  gap: 0.5rem;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  padding: 0.7rem 1.5rem;
+  border-radius: var(--radius-pill);
+  box-shadow: 0 4px 20px rgba(29, 185, 84, 0.4);
+  transform: translateY(8px);
   transition: transform 0.3s var(--ease-out);
 }
 
-.fxfiles-showcase__browser-body:hover .fxfiles-showcase__site-cta-hint {
-  color: var(--color-primary-light);
+.fxfiles-showcase__overlay:hover .fxfiles-showcase__overlay-btn {
+  transform: translateY(0);
 }
-
-.fxfiles-showcase__browser-body:hover .fxfiles-showcase__site-cta-hint svg {
-  transform: translateX(4px);
-}
-
-/* Shimmer sweep across the preview */
-.fxfiles-showcase__shimmer {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    105deg,
-    transparent 40%,
-    rgba(29, 185, 84, 0.06) 45%,
-    rgba(29, 185, 84, 0.1) 50%,
-    rgba(29, 185, 84, 0.06) 55%,
-    transparent 60%
-  );
-  transform: translateX(-100%);
-  pointer-events: none;
-  animation: shimmer-sweep 4s ease-in-out infinite;
-  animation-delay: 2s;
-}
-
-@keyframes shimmer-sweep {
-  0%, 100% { transform: translateX(-100%); }
-  50% { transform: translateX(100%); }
 }
 
 /* FxFiles Showcase Responsive */
@@ -602,25 +509,6 @@
 
   .fxfiles-showcase__browser-body {
     aspect-ratio: 4 / 3;
-  }
-
-  .fxfiles-showcase__site-icon {
-    width: 44px;
-    height: 44px;
-  }
-
-  .fxfiles-showcase__site-name {
-    font-size: var(--font-size-xl);
-  }
-
-  .fxfiles-showcase__chip {
-    font-size: 0.62rem;
-    padding: 0.25rem 0.55rem;
-  }
-
-  .fxfiles-showcase__site-preview {
-    padding: 1.25rem 1rem;
-    gap: 0.75rem;
   }
 }
 
