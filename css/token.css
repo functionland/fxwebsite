@@ -223,6 +223,185 @@
   border-radius: var(--radius-md);
 }
 
+/* Live Token Stats */
+.token-stats {
+  position: relative;
+  background: linear-gradient(135deg, var(--color-darker-bg) 0%, var(--color-dark-bg) 55%, #1a1a3e 100%);
+  color: var(--color-text-white);
+  padding: var(--spacing-3xl) 0;
+  overflow: hidden;
+}
+
+.token-stats::before,
+.token-stats::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(80px);
+}
+
+.token-stats::before {
+  top: -25%;
+  left: -10%;
+  width: 520px;
+  height: 520px;
+  background: radial-gradient(circle, rgba(29, 185, 84, 0.18) 0%, transparent 70%);
+}
+
+.token-stats::after {
+  bottom: -25%;
+  right: -10%;
+  width: 480px;
+  height: 480px;
+  background: radial-gradient(circle, rgba(0, 217, 255, 0.12) 0%, transparent 70%);
+}
+
+.token-stats .container {
+  position: relative;
+  z-index: 1;
+}
+
+.token-stats .section__title {
+  color: var(--color-text-white);
+}
+
+.token-stats .section__subtitle {
+  color: var(--color-text-white-muted);
+}
+
+.token-stats__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  color: var(--color-primary-light);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.9rem;
+  border-radius: var(--radius-pill);
+  background: rgba(29, 185, 84, 0.12);
+  border: 1px solid rgba(29, 185, 84, 0.25);
+  margin-bottom: var(--spacing-sm);
+}
+
+.token-stats__eyebrow::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-primary-light);
+  box-shadow: 0 0 10px var(--color-primary-light);
+  animation: token-stats-pulse 2s infinite ease-in-out;
+}
+
+@keyframes token-stats-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(0.85); }
+}
+
+.token-stats__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-2xl);
+}
+
+.token-stats__card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: var(--spacing-lg);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: border-color var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base);
+  min-height: 180px;
+}
+
+.token-stats__card:hover {
+  border-color: rgba(29, 185, 84, 0.4);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25), 0 0 24px rgba(29, 185, 84, 0.18);
+}
+
+.token-stats__label {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  color: var(--color-text-white-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.token-stats__value {
+  font-size: 2.75rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #ffffff 0%, #1DB954 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.token-stats__unit {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  -webkit-text-fill-color: var(--color-text-white-muted);
+  color: var(--color-text-white-muted);
+  background: none;
+  text-transform: uppercase;
+}
+
+.token-stats__note {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-white-muted);
+  line-height: 1.5;
+  margin-top: auto;
+}
+
+.token-stats__cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.token-stats__source {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-white-muted);
+  opacity: 0.75;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 1024px) {
+  .token-stats__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .token-stats__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .token-stats__value {
+    font-size: 2.25rem;
+  }
+
+  .token-stats__card {
+    min-height: 0;
+  }
+}
+
 /* Token Info Table */
 .token-info {
   padding: var(--spacing-3xl) 0;
