@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="referrer" content="no-referrer">
+  <title>Order Confirmation | Functionland</title>
+  <link rel="icon" type="image/png" href="../assets/images/logo/fula-icon-green.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/header.css">
+  <link rel="stylesheet" href="../css/footer.css">
+  <style>
+    .confirm-hero {
+      padding: 8rem 0 3rem;
+      text-align: center;
+    }
+    .confirm-hero__check {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto var(--spacing-md);
+      border-radius: 50%;
+      background: rgba(29, 185, 84, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .confirm-hero__check svg {
+      width: 36px;
+      height: 36px;
+      fill: var(--color-primary);
+    }
+    .confirm-hero__title {
+      font-size: var(--font-size-3xl);
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+    .confirm-hero__subtitle {
+      color: var(--color-text-white-muted);
+      font-size: var(--font-size-lg);
+      max-width: 640px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    .confirm-body {
+      padding: 0 0 var(--spacing-3xl);
+    }
+    .confirm-card {
+      max-width: 720px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: var(--spacing-xl);
+    }
+    .confirm-card + .confirm-card {
+      margin-top: var(--spacing-md);
+    }
+    .confirm-card h2 {
+      font-size: var(--font-size-xl);
+      font-weight: 700;
+      margin: 0 0 var(--spacing-sm);
+      color: var(--color-text-white);
+    }
+    .confirm-card p,
+    .confirm-card li {
+      color: var(--color-text-white-muted);
+      line-height: 1.7;
+    }
+    .confirm-card ul {
+      padding-left: 1.25rem;
+      margin: 0;
+      list-style: disc;
+    }
+    .order-ref {
+      list-style: none;
+      padding: 0;
+      margin: var(--spacing-sm) 0 0;
+      display: grid;
+      gap: 0.5rem;
+    }
+    .order-ref li {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      font-size: var(--font-size-sm);
+      padding: 0.5rem 0.75rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 6px;
+      word-break: break-all;
+    }
+    .order-ref li strong {
+      color: var(--color-text-white);
+      min-width: 130px;
+    }
+    .order-ref li span {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: var(--color-text-white-muted);
+    }
+    .confirm-cta {
+      max-width: 720px;
+      margin: var(--spacing-lg) auto 0;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container">
+      <a href="../" class="site-header__logo">
+        <img src="../assets/images/logo/fula-lockup-green.png" alt="Functionland" width="140" height="36">
+      </a>
+      <button class="hamburger" aria-label="Toggle menu">
+        <span class="hamburger__line"></span>
+        <span class="hamburger__line"></span>
+        <span class="hamburger__line"></span>
+      </button>
+      <nav class="nav">
+        <ul class="nav__list">
+          <li class="nav__item"><a href="../" class="nav__link">Home</a></li>
+          <li class="nav__item"><a href="../ecosystem/" class="nav__link">Ecosystem</a></li>
+          <li class="nav__item nav__item--has-dropdown">
+            <a href="#" class="nav__link">Participate <span class="nav__arrow">&#9662;</span></a>
+            <div class="nav__dropdown">
+              <a href="../use-apps/" class="nav__dropdown-link">Use Apps</a>
+              <a href="../fxblox-device/" class="nav__dropdown-link">FxBlox Device</a>
+              <a href="../token/" class="nav__dropdown-link">Token</a>
+              <a href="../build/" class="nav__dropdown-link">Build Apps</a>
+              <a href="../fula-staking/" class="nav__dropdown-link">FULA Staking</a>
+              <a href="../fula-vip-staking/" class="nav__dropdown-link">FULA VIP Staking</a>
+              <a href="../ipfs-ecosystem/" class="nav__dropdown-link">IPFS Ecosystem</a>
+              <a href="../live-map/" class="nav__dropdown-link">Live Map</a>
+              <a href="../fec-nfts/" class="nav__dropdown-link">FEC NFTs</a>
+              <a href="https://docs.fx.land/functionyard" class="nav__dropdown-link nav__dropdown-link--external" target="_blank" rel="noopener">Documentation</a>
+              <a href="https://fx.land/FulaWP" class="nav__dropdown-link nav__dropdown-link--external" target="_blank" rel="noopener">Whitepaper</a>
+            </div>
+          </li>
+          <li class="nav__item"><a href="../about/" class="nav__link">About</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="section--dark confirm-hero">
+      <div class="container">
+        <div class="confirm-hero__check" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+        </div>
+        <h1 class="confirm-hero__title">Thank you. Your payment was submitted.</h1>
+        <p class="confirm-hero__subtitle">Square will email a receipt to the address you used at checkout, usually within a few minutes. If it doesn&rsquo;t arrive, please check your spam folder.</p>
+      </div>
+    </section>
+
+    <section class="section--dark confirm-body">
+      <div class="container">
+
+        <div class="confirm-card">
+          <h2>What happens next</h2>
+          <ul>
+            <li>Square sends your purchase receipt by email.</li>
+            <li>Our team reviews the order and prepares your FxBlox&nbsp;Lite for shipment from Canada.</li>
+            <li>You will receive shipping and tracking updates by email once the order ships.</li>
+            <li>Estimated lead time: 5&ndash;10 business days for fulfillment, plus carrier transit time. International orders may take longer and may be subject to duties and taxes.</li>
+          </ul>
+        </div>
+
+        <div class="confirm-card" id="order-ref-card" hidden>
+          <h2>Order reference</h2>
+          <p>Keep these identifiers in case you need to contact support about this order.</p>
+          <ul class="order-ref" data-order-details></ul>
+        </div>
+
+        <div class="confirm-card">
+          <h2>Need help?</h2>
+          <p>For questions about your order, refunds, warranty, or shipping, contact <a href="mailto:info@fx.land" style="color: var(--color-primary-accessible); text-decoration: underline;">info@fx.land</a>. Please include your Square order reference if you have it.</p>
+        </div>
+
+        <div class="confirm-cta">
+          <a href="../" class="btn btn--outline">Back to Home</a>
+          <a href="../fxblox-device/" class="btn btn--primary">Explore FxBlox Devices</a>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <img src="../assets/images/logo/fula-lockup-green.png" alt="Functionland" class="footer__logo" width="360" height="36">
+          <p class="footer__tagline">DePIN Storage Platform. Own the Cloud. Earn Crypto with FxBlox.</p>
+        </div>
+        <div>
+          <h4 class="footer__col-title">Navigation</h4>
+          <div class="footer__links">
+            <a href="../" class="footer__link">Home</a>
+            <a href="../ecosystem/" class="footer__link">Ecosystem</a>
+            <a href="../live-map/" class="footer__link">Live Map</a>
+            <a href="../about/" class="footer__link">About Us</a>
+          </div>
+        </div>
+        <div>
+          <h4 class="footer__col-title">Products</h4>
+          <div class="footer__links">
+            <a href="../use-apps/" class="footer__link">Use Apps</a>
+            <a href="../fxblox-device/" class="footer__link">FxBlox Device</a>
+            <a href="../token/" class="footer__link">Token</a>
+            <a href="../ipfs-ecosystem/" class="footer__link">IPFS Ecosystem</a>
+            <a href="../build/" class="footer__link">Build Apps</a>
+            <a href="../fec-nfts/" class="footer__link">FEC NFTs</a>
+          </div>
+        </div>
+        <div>
+          <h4 class="footer__col-title">Additional</h4>
+          <div class="footer__links">
+            <a href="https://docs.fx.land/functionyard" class="footer__link" target="_blank" rel="noopener">Documentation</a>
+            <a href="https://fx.land/FulaWP" class="footer__link" target="_blank" rel="noopener">Whitepaper</a>
+            <a href="https://simulation.fx.land" class="footer__link" target="_blank" rel="noopener">Mining Simulation</a>
+            <a href="https://coinmarketcap.com/currencies/functionland/" class="footer__link" target="_blank" rel="noopener">CoinMarketCap</a>
+            <a href="https://www.crunchbase.com/organization/functionland" class="footer__link" target="_blank" rel="noopener">Crunchbase</a>
+            <a href="../branding/" class="footer__link">Branding</a>
+            <a href="../privacy-policy/" class="footer__link">Privacy Policy</a>
+            <a href="../terms/" class="footer__link">Terms of Use</a>
+          </div>
+        </div>
+      </div>
+      <p class="footer__disclaimer">This website is owned by Fula Governance Association and not Functionland Inc. Functionland is the name of the decentralized network that is created by Fula Governance Association DAO. Functionland Inc (Canada) is only a contractor for Fula Governance Association (Switzerland) and does not involve in sales of token or token treasury management or token distribution or NFTs. Functionland is solely a contractor to perform the marketing, development and maintenance of the Fula network and blockchain and not liable for token related matters.</p>
+      <p class="footer__copyright">&copy; 2025 Functionland. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="../js/nav.js"></script>
+  <script src="../js/analytics.js"></script>
+  <script>
+    (function () {
+      var ALLOWED = [
+        { key: 'orderId',       label: 'Order ID' },
+        { key: 'transactionId', label: 'Transaction ID' },
+        { key: 'referenceId',   label: 'Reference ID' },
+        { key: 'checkoutId',    label: 'Checkout ID' }
+      ];
+      var MAX_VALUE_LEN = 120;
+      var VALID = /^[A-Za-z0-9_\-]+$/;
+
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var list = document.querySelector('[data-order-details]');
+        var card = document.getElementById('order-ref-card');
+        if (!params || !list || !card) return;
+
+        var shown = 0;
+        ALLOWED.forEach(function (entry) {
+          var raw = params.get(entry.key);
+          if (!raw) return;
+          if (!VALID.test(raw)) return;
+          var safe = raw.slice(0, MAX_VALUE_LEN);
+
+          var li = document.createElement('li');
+          var strong = document.createElement('strong');
+          strong.textContent = entry.label;
+          var span = document.createElement('span');
+          span.textContent = safe;
+          li.appendChild(strong);
+          li.appendChild(span);
+          list.appendChild(li);
+          shown++;
+        });
+
+        if (shown > 0) card.hidden = false;
+      } catch (e) {
+        // graceful degrade: leave the page in its default thank-you state
+      }
+    })();
+  </script>
+</body>
+</html>
