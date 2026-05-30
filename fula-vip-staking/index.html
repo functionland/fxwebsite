@@ -14,6 +14,8 @@
   <link rel="icon" type="image/png" href="../assets/images/logo/fula-icon-green.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://mainnet.base.org">
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/header.css">
@@ -490,11 +492,13 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/web3@4.16.0/dist/web3.min.js"></script>
-<script>
+<script type="module">
+import { WagmiAdapter, createAppKit, networks, WagmiCore } from 'https://cdn.jsdelivr.net/npm/@reown/appkit-cdn@1.8.20/dist/appkit.js';
 (function() {
   'use strict';
 
   const CONFIG = {
+    PROJECT_ID: '192a8f5e8d1742ea923be485e60f2612',
     STAKING_CONTRACT: '0xb2064743e3da40bB4C18e80620A02a38e87fB145',
     TOKEN_CONTRACT: '0x9e12735d77c72c5C3670636D428f2F3815d8A4cB',
     CHAIN_ID: 8453,
@@ -526,7 +530,14 @@
     {"inputs":[{"internalType":"uint256","name":"rewardIndex","type":"uint256"}],"name":"claimReferrerReward","outputs":[],"stateMutability":"nonpayable","type":"function"}
   ];
 
-  let web3=null,provider=null,stakingContract=null,tokenContract=null,selectedAccount=null,selectedPeriod=null,tokenBalance=0,userStakes=[],currentBlockTimestamp=0,termsAccepted=false;
+  // Read-only side: a dedicated Base RPC (with fallbacks) so balances/stakes load reliably
+  // regardless of the connected wallet (mobile WalletConnect can't serve reads consistently).
+  const RPC_URLS = ['https://mainnet.base.org','https://base-rpc.publicnode.com','https://base.drpc.org'];
+  let rpcIndex=0, readWeb3=null, stakingRead=null, tokenRead=null;
+  // Wallet (write) side, provided by Reown AppKit.
+  let modal=null, eip155Provider=null, web3=null, stakingWrite=null, tokenWrite=null;
+  let selectedAccount=null, activeAccount=null, appkitConnected=false, currentChainId=null, wrongNetworkNotified=false;
+  let selectedPeriod=null,tokenBalance=0,userStakes=[],currentBlockTimestamp=0,termsAccepted=false;
 
   const el = {
     connectBtn: document.getElementById('fula-connect-btn'),
@@ -566,7 +577,6 @@
   const formatShortDate = t => new Date(t*1000).toLocaleDateString(undefined,{month:'short',day:'numeric'});
   
   let isLoadingData = false;
-  let listenersAttached = false;
 
   function showNotification(msg, type='success') {
     el.notification.textContent = msg;
@@ -579,55 +589,91 @@
     else { btn.disabled=false; btn.innerHTML=text||btn.dataset.originalText||'Submit'; }
   }
 
-  async function connectWallet() {
-    if(!window.ethereum) { showNotification('No wallet detected.','error'); return false; }
-    try {
-      setButtonLoading(el.connectBtn,true,'Connecting...');
-      provider = window.ethereum;
-      const accounts = await provider.request({method:'eth_requestAccounts'});
-      if(!accounts.length) throw new Error('No accounts');
-      web3 = new Web3(provider);
-      selectedAccount = accounts[0];
-      
-      // Only attach listeners once
-      if (!listenersAttached) {
-        provider.on('accountsChanged', accs => { 
-          if(!accs.length) handleDisconnect(); 
-          else { selectedAccount=accs[0]; updateConnectedUI(); loadUserData(); }
-        });
-        provider.on('chainChanged', () => { ensureBaseNetwork(); loadUserData(); });
-        listenersAttached = true;
-      }
-      
-      await ensureBaseNetwork();
-      await initializeContracts();
-      await loadUserData();
-      updateConnectedUI();
-      localStorage.setItem('fula-wallet-connected','true');
-      return true;
-    } catch(e) {
-      console.error(e);
-      showNotification(e.code===4001?'Connection cancelled':'Connection failed','warning');
-      setButtonLoading(el.connectBtn,false,'Connect Wallet');
-      return false;
+  // ---- Read-only provider: dedicated Base RPC with fallbacks (reads are wallet-independent) ----
+  function buildReadProvider() {
+    readWeb3 = new Web3(RPC_URLS[rpcIndex]);
+    stakingRead = new readWeb3.eth.Contract(STAKING_ABI, CONFIG.STAKING_CONTRACT);
+    tokenRead = new readWeb3.eth.Contract(TOKEN_ABI, CONFIG.TOKEN_CONTRACT);
+  }
+  function rotateRpc() { rpcIndex = (rpcIndex + 1) % RPC_URLS.length; buildReadProvider(); }
+
+  // After a tx, wait until the read RPC has caught up to the mined block so the reload isn't stale.
+  async function waitForReadSync(blockNumber) {
+    if(!blockNumber) return;
+    const target = Number(blockNumber);
+    for(let i=0;i<12;i++) {
+      try { if(Number(await readWeb3.eth.getBlockNumber()) >= target) return; } catch(e) {}
+      await new Promise(r => setTimeout(r, 800));
     }
   }
 
-  function handleDisconnect() {
-    selectedAccount=null; provider=null; web3=null; stakingContract=null; tokenContract=null; userStakes=[]; tokenBalance=0;
-    updateDisconnectedUI();
-    localStorage.removeItem('fula-wallet-connected');
+  // ---- Reown AppKit: wallet connection (modal, WalletConnect/QR, mobile, injected) ----
+  function initAppKit() {
+    const wagmiAdapter = new WagmiAdapter({ networks: [networks.base], projectId: CONFIG.PROJECT_ID });
+    modal = createAppKit({
+      adapters: [wagmiAdapter],
+      networks: [networks.base],
+      defaultNetwork: networks.base,
+      projectId: CONFIG.PROJECT_ID,
+      metadata: {
+        name: 'FULA VIP Staking',
+        description: 'Stake FULA tokens and earn rewards on Base',
+        url: 'https://fx.land',
+        icons: ['https://fx.land/assets/images/logo/fula-icon-green.png']
+      },
+      themeMode: 'dark',
+      features: { analytics: false, email: false, socials: false }
+    });
+
+    // Connect / disconnect / account switch
+    modal.subscribeAccount(state => {
+      if(state && state.isConnected && state.address) {
+        const changed = state.address !== selectedAccount;
+        selectedAccount = state.address;
+        appkitConnected = true;
+        updateConnectedUI();
+        if(changed) { activeAccount = selectedAccount; loadUserData(); }
+      } else if(appkitConnected || selectedAccount) {
+        handleDisconnect();
+      }
+    });
+
+    // EIP-1193 provider used only for signing/sending; reads go through readWeb3.
+    modal.subscribeProviders(state => { eip155Provider = (state && state['eip155']) || null; });
+
+    // Wrong-network hint (sends also auto-switch via ensureWalletReady).
+    modal.subscribeNetwork(state => {
+      currentChainId = state && state.chainId != null ? Number(state.chainId) : null;
+      if(appkitConnected && currentChainId && currentChainId !== CONFIG.CHAIN_ID && !wrongNetworkNotified) {
+        wrongNetworkNotified = true;
+        showNotification('Please switch to Base network','warning');
+      }
+      if(currentChainId === CONFIG.CHAIN_ID) wrongNetworkNotified = false;
+    });
+
+    // Restore a previous session on reload (vanilla wagmi does not auto-reconnect on its own).
+    try { WagmiCore.reconnect(wagmiAdapter.wagmiConfig); } catch(e) {}
   }
 
-  async function ensureBaseNetwork() {
-    if(!provider) return;
-    try {
-      const chainId = await web3.eth.getChainId();
-      if(Number(chainId) !== CONFIG.CHAIN_ID) {
-        try { await provider.request({method:'wallet_switchEthereumChain',params:[{chainId:CONFIG.CHAIN_ID_HEX}]}); }
-        catch(e) { if(e.code===4902) await provider.request({method:'wallet_addEthereumChain',params:[{chainId:CONFIG.CHAIN_ID_HEX,chainName:CONFIG.CHAIN_NAME,nativeCurrency:{name:'ETH',symbol:'ETH',decimals:18},rpcUrls:[CONFIG.RPC_URL],blockExplorerUrls:[CONFIG.EXPLORER_URL]}]}); }
-      }
-    } catch(e) { showNotification('Please switch to Base network','warning'); }
+  function handleDisconnect() {
+    selectedAccount=null; activeAccount=null; appkitConnected=false; eip155Provider=null;
+    web3=null; stakingWrite=null; tokenWrite=null; userStakes=[]; tokenBalance=0;
+    updateDisconnectedUI();
+  }
+
+  // Ensure we can transact: connected, on Base, with fresh write contracts bound to the live provider.
+  async function ensureWalletReady() {
+    if(!appkitConnected || !selectedAccount) throw { code:'NOT_CONNECTED' };
+    if(!eip155Provider) throw { code:'NO_PROVIDER' };
+    let cid = parseInt(await eip155Provider.request({ method:'eth_chainId' }), 16);
+    if(cid !== CONFIG.CHAIN_ID) {
+      try { await modal.switchNetwork(networks.base); } catch(e) {}
+      cid = parseInt(await eip155Provider.request({ method:'eth_chainId' }), 16);
+      if(cid !== CONFIG.CHAIN_ID) throw { code:'WRONG_NETWORK' };
+    }
+    web3 = new Web3(eip155Provider);
+    stakingWrite = new web3.eth.Contract(STAKING_ABI, CONFIG.STAKING_CONTRACT);
+    tokenWrite = new web3.eth.Contract(TOKEN_ABI, CONFIG.TOKEN_CONTRACT);
   }
 
   function updateConnectedUI() {
@@ -654,36 +700,44 @@
     el.activeStakes.textContent = '0';
   }
 
-  async function initializeContracts() {
-    if(!web3) return;
-    stakingContract = new web3.eth.Contract(STAKING_ABI, CONFIG.STAKING_CONTRACT);
-    tokenContract = new web3.eth.Contract(TOKEN_ABI, CONFIG.TOKEN_CONTRACT);
+  async function loadUserDataOnce() {
+    const block = await readWeb3.eth.getBlock('latest');
+    currentBlockTimestamp = Number(block.timestamp);
+    const balance = await tokenRead.methods.balanceOf(selectedAccount).call();
+    tokenBalance = Web3.utils.fromWei(balance,'ether');
+    el.balance.textContent = formatNumber(tokenBalance);
+    const ethBal = await readWeb3.eth.getBalance(selectedAccount);
+    el.ethBalance.textContent = formatNumber(Web3.utils.fromWei(ethBal,'ether'));
+    const totalStaked = await stakingRead.methods.getUserTotalStaked(selectedAccount).call();
+    el.userStaked.textContent = formatNumber(Web3.utils.fromWei(totalStaked,'ether'))+' FULA';
+    await loadUserStakes();
+    await loadReferrerData();
+    validateStakeAmount();
   }
 
   async function loadUserData() {
-    if(!selectedAccount||!stakingContract||!tokenContract) return;
+    if(!selectedAccount||!readWeb3) return;
     if(isLoadingData) return; // Prevent concurrent calls
     isLoadingData = true;
     try {
-      const block = await web3.eth.getBlock('latest');
-      currentBlockTimestamp = Number(block.timestamp);
-      const balance = await tokenContract.methods.balanceOf(selectedAccount).call();
-      tokenBalance = web3.utils.fromWei(balance,'ether');
-      el.balance.textContent = formatNumber(tokenBalance);
-      const ethBal = await web3.eth.getBalance(selectedAccount);
-      el.ethBalance.textContent = formatNumber(web3.utils.fromWei(ethBal,'ether'));
-      const totalStaked = await stakingContract.methods.getUserTotalStaked(selectedAccount).call();
-      el.userStaked.textContent = formatNumber(web3.utils.fromWei(totalStaked,'ether'))+' FULA';
-      await loadUserStakes();
-      await loadReferrerData();
-      validateStakeAmount();
-    } catch(e) { console.error(e); }
+      await loadUserDataOnce();
+    } catch(e) {
+      console.error(e);
+      // Primary RPC failed mid-load — try each fallback endpoint once.
+      let recovered = false;
+      for(let i=0;i<RPC_URLS.length-1;i++) {
+        rotateRpc();
+        try { await loadUserDataOnce(); recovered = true; break; }
+        catch(e2) { console.error('Fallback RPC failed', e2); }
+      }
+      if(!recovered) showNotification('Network busy — could not load data, please retry.','warning');
+    }
     finally { isLoadingData = false; }
   }
 
   async function loadUserStakes() {
     try {
-      const stakes = await stakingContract.methods.getUserStakes(selectedAccount).call();
+      const stakes = await stakingRead.methods.getUserStakes(selectedAccount).call();
       userStakes = stakes;
       const active = stakes.filter(s=>s.isActive);
       el.activeStakes.textContent = active.length;
@@ -716,7 +770,7 @@
 
   function generateCalendarHTML(stake, index) {
     const startTime=Number(stake.startTime), lockPeriod=Number(stake.lockPeriod), endTime=startTime+lockPeriod;
-    const amount=parseFloat(web3.utils.fromWei(stake.amount,'ether'));
+    const amount=parseFloat(Web3.utils.fromWei(stake.amount,'ether'));
     let fixedAPY=15; if(lockPeriod===CONFIG.LOCK_PERIODS[730]) fixedAPY=18; else if(lockPeriod===CONFIG.LOCK_PERIODS[1095]) fixedAPY=24;
     const totalReward=(amount*fixedAPY*lockPeriod)/(100*365*24*60*60);
     const dailyReward=totalReward/(lockPeriod/(24*60*60));
@@ -760,7 +814,7 @@
 
   function updateCalendarMonth(cal,stake,idx,year,month) {
     const startTime=Number(stake.startTime),lockPeriod=Number(stake.lockPeriod),endTime=startTime+lockPeriod;
-    const amount=parseFloat(web3.utils.fromWei(stake.amount,'ether'));
+    const amount=parseFloat(Web3.utils.fromWei(stake.amount,'ether'));
     let fixedAPY=15; if(lockPeriod===CONFIG.LOCK_PERIODS[730]) fixedAPY=18; else if(lockPeriod===CONFIG.LOCK_PERIODS[1095]) fixedAPY=24;
     const totalReward=(amount*fixedAPY*lockPeriod)/(100*365*24*60*60);
     const dailyReward=totalReward/(lockPeriod/(24*60*60));
@@ -783,7 +837,7 @@
   }
 
   async function createStakeElement(stake,index) {
-    const amount=web3.utils.fromWei(stake.amount,'ether'), startTime=Number(stake.startTime), lockPeriod=Number(stake.lockPeriod), endTime=startTime+lockPeriod;
+    const amount=Web3.utils.fromWei(stake.amount,'ether'), startTime=Number(stake.startTime), lockPeriod=Number(stake.lockPeriod), endTime=startTime+lockPeriod;
     const isLocked=currentBlockTimestamp<endTime;
     let periodLabel='',apyLabel='';
     if(lockPeriod===CONFIG.LOCK_PERIODS[365]){periodLabel='1 Year';apyLabel='15% APY';}
@@ -791,7 +845,7 @@
 	else if(lockPeriod===CONFIG.LOCK_PERIODS[1095]){periodLabel='3 Years';apyLabel='24% APY';}
     else{periodLabel=Math.round(lockPeriod/(24*60*60))+' Days';apyLabel='Legacy';}
     let claimableRewards='0';
-    try{const c=await stakingContract.methods.getClaimableStakerReward(selectedAccount,index).call();claimableRewards=web3.utils.fromWei(c,'ether');}catch(e){}
+    try{const c=await stakingRead.methods.getClaimableStakerReward(selectedAccount,index).call();claimableRewards=Web3.utils.fromWei(c,'ether');}catch(e){}
     const hasUnclaimed=parseFloat(claimableRewards)>0.000001, canUnstake=!isLocked&&!hasUnclaimed;
     const div=document.createElement('div'); div.className='fula-stake-item';
     div.innerHTML=`<div class="fula-stake-header"><div class="fula-stake-amount">${formatNumber(amount)} FULA</div><div class="fula-stake-period">${periodLabel} • ${apyLabel}</div></div>
@@ -813,10 +867,10 @@
 
   async function loadReferrerData() {
     try {
-      const stats=await stakingContract.methods.getReferrerStats(selectedAccount).call();
-      el.totalReferred.textContent=formatNumber(web3.utils.fromWei(stats.totalReferred,'ether'))+' FULA';
-      el.totalRefRewards.textContent=formatNumber(web3.utils.fromWei(stats.totalReferrerRewards,'ether'))+' FULA';
-      el.unclaimedRewards.textContent=formatNumber(web3.utils.fromWei(stats.unclaimedRewards,'ether'))+' FULA';
+      const stats=await stakingRead.methods.getReferrerStats(selectedAccount).call();
+      el.totalReferred.textContent=formatNumber(Web3.utils.fromWei(stats.totalReferred,'ether'))+' FULA';
+      el.totalRefRewards.textContent=formatNumber(Web3.utils.fromWei(stats.totalReferrerRewards,'ether'))+' FULA';
+      el.unclaimedRewards.textContent=formatNumber(Web3.utils.fromWei(stats.unclaimedRewards,'ether'))+' FULA';
       el.referredCount.textContent=stats.referredStakersCount;
       await loadReferredStakers();
     } catch(e){console.error(e);}
@@ -824,7 +878,7 @@
 
   async function loadReferredStakers() {
     try {
-      const rewards=await stakingContract.methods.getReferrerRewards(selectedAccount).call();
+      const rewards=await stakingRead.methods.getReferrerRewards(selectedAccount).call();
       el.referredStakersList.innerHTML='';
       if(!rewards.length){el.referredStakersList.appendChild(el.noReferrerRewards);el.noReferrerRewards.style.display='block';return;}
       el.noReferrerRewards.style.display='none';
@@ -833,8 +887,8 @@
   }
 
   function createReferredStakerCard(reward,index) {
-    const totalReward=web3.utils.fromWei(reward.totalReward,'ether'), claimedReward=web3.utils.fromWei(reward.claimedReward,'ether');
-    const stakedAmount=web3.utils.fromWei(reward.amount,'ether'), startTime=Number(reward.startTime), endTime=Number(reward.endTime), lockPeriod=Number(reward.lockPeriod), isActive=reward.isActive;
+    const totalReward=Web3.utils.fromWei(reward.totalReward,'ether'), claimedReward=Web3.utils.fromWei(reward.claimedReward,'ether');
+    const stakedAmount=Web3.utils.fromWei(reward.amount,'ether'), startTime=Number(reward.startTime), endTime=Number(reward.endTime), lockPeriod=Number(reward.lockPeriod), isActive=reward.isActive;
     const elapsed=Math.min(currentBlockTimestamp-startTime,lockPeriod), progress=(elapsed/lockPeriod)*100;
     const claimable=(parseFloat(totalReward)*elapsed/lockPeriod)-parseFloat(claimedReward), hasClaimable=claimable>0.000001;
     let periodLabel=''; if(lockPeriod===CONFIG.LOCK_PERIODS[365])periodLabel='1 Year'; else if(lockPeriod===CONFIG.LOCK_PERIODS[730])periodLabel='2 Years'; else if(lockPeriod===CONFIG.LOCK_PERIODS[1095])periodLabel='3 Years'; else periodLabel=Math.round(lockPeriod/(24*60*60))+' Days';
@@ -855,70 +909,82 @@
     return div;
   }
 
-  async function getGasPrice() { try{const g=await web3.eth.getGasPrice();return Math.ceil(Number(g)*1.05).toString();}catch(e){return web3.utils.toWei('0.1','gwei');} }
-
   async function estimateGas(method,params) {
     try{return Math.ceil(Number(await method.estimateGas(params))*1.2);}
     catch(e){const limits={stakeToken:460000,stakeTokenWithReferrer:900000,unstakeToken:500000,claimStakerReward:300000,claimReferrerReward:300000,approve:200000};return limits[method._method?.name]||600000;}
   }
 
+  function txErrMsg(e) {
+    if(!e) return 'Transaction failed';
+    if(e.code===4001||e.code==='ACTION_REJECTED'||/reject|denied/i.test(e.message||'')) return 'Transaction cancelled';
+    if(e.code==='WRONG_NETWORK') return 'Please switch to Base network';
+    if(e.code==='NOT_CONNECTED'||e.code==='NO_PROVIDER') return 'Connect your wallet first';
+    return 'Transaction failed';
+  }
+
   async function handleStake() {
-    if(!selectedAccount||!stakingContract||!tokenContract||!selectedPeriod) return;
+    if(!selectedAccount||!selectedPeriod) return;
     if(!termsAccepted){showNotification('Please accept the terms','error');return;}
-    const amount=parseFloat(el.stakeAmount.value); if(!amount||amount<=0){showNotification('Enter valid amount','error');return;}
-    const amountWei=web3.utils.toWei(amount.toString(),'ether'), referrer=el.referrerInput.value.trim(), lockPeriod=CONFIG.LOCK_PERIODS[selectedPeriod];
+    const amountStr=el.stakeAmount.value.trim(); const amount=parseFloat(amountStr); if(!amount||amount<=0){showNotification('Enter valid amount','error');return;}
+    const amountWei=Web3.utils.toWei(amountStr,'ether'), referrer=el.referrerInput.value.trim(), lockPeriod=CONFIG.LOCK_PERIODS[selectedPeriod];
     try {
-      setButtonLoading(el.stakeBtn,true,'Approving...');
-      const allowance=await tokenContract.methods.allowance(selectedAccount,CONFIG.STAKING_CONTRACT).call();
+      setButtonLoading(el.stakeBtn,true,'Confirming...');
+      await ensureWalletReady();
+      const allowance=await tokenRead.methods.allowance(selectedAccount,CONFIG.STAKING_CONTRACT).call();
       if(BigInt(allowance)<BigInt(amountWei)) {
-        const approveMethod=tokenContract.methods.approve(CONFIG.STAKING_CONTRACT,amountWei);
-        await approveMethod.send({from:selectedAccount,gas:await estimateGas(approveMethod,{from:selectedAccount},'approve'),gasPrice:await getGasPrice()});
+        setButtonLoading(el.stakeBtn,true,'Approving...');
+        const approveMethod=tokenWrite.methods.approve(CONFIG.STAKING_CONTRACT,amountWei);
+        await approveMethod.send({from:selectedAccount,gas:await estimateGas(approveMethod,{from:selectedAccount})});
       }
       setButtonLoading(el.stakeBtn,true,'Staking...');
-      let stakeMethod; if(referrer&&web3.utils.isAddress(referrer)&&referrer.toLowerCase()!==selectedAccount.toLowerCase()) stakeMethod=stakingContract.methods.stakeTokenWithReferrer(amountWei,lockPeriod,referrer);
-      else stakeMethod=stakingContract.methods.stakeToken(amountWei,lockPeriod);
-      await stakeMethod.send({from:selectedAccount,gas:await estimateGas(stakeMethod,{from:selectedAccount}),gasPrice:await getGasPrice()});
+      let stakeMethod; if(referrer&&Web3.utils.isAddress(referrer)&&referrer.toLowerCase()!==selectedAccount.toLowerCase()) stakeMethod=stakingWrite.methods.stakeTokenWithReferrer(amountWei,lockPeriod,referrer);
+      else stakeMethod=stakingWrite.methods.stakeToken(amountWei,lockPeriod);
+      const receipt=await stakeMethod.send({from:selectedAccount,gas:await estimateGas(stakeMethod,{from:selectedAccount})});
       showNotification('Successfully staked '+amount+' FULA!','success');
       el.stakeAmount.value=''; el.referrerInput.value=''; el.stakeOptions.forEach(o=>o.classList.remove('selected')); selectedPeriod=null;
       el.termsCheckbox.checked=false; termsAccepted=false; el.termsContainer.classList.remove('checked');
+      await waitForReadSync(receipt&&receipt.blockNumber);
       await loadUserData();
-    } catch(e){console.error(e);showNotification(e.code===4001?'Cancelled':'Staking failed','warning');}
+    } catch(e){console.error(e);showNotification(txErrMsg(e),'warning');}
     finally{setButtonLoading(el.stakeBtn,false,'Stake FULA');el.stakeBtn.disabled=true;validateStakeAmount();}
   }
 
   async function handleClaimStakerReward(index,btn) {
-    if(!selectedAccount||!stakingContract) return;
+    if(!selectedAccount) return;
     const orig=btn.textContent;
     try {
       setButtonLoading(btn,true,'Claiming...');
-      const m=stakingContract.methods.claimStakerReward(index);
-      await m.send({from:selectedAccount,gas:await estimateGas(m,{from:selectedAccount}),gasPrice:await getGasPrice()});
-      showNotification('Rewards claimed!','success'); await loadUserData();
-    } catch(e){console.error(e);showNotification(e.code===4001?'Cancelled':'Claim failed','warning');setButtonLoading(btn,false,orig);}
+      await ensureWalletReady();
+      const m=stakingWrite.methods.claimStakerReward(index);
+      const receipt=await m.send({from:selectedAccount,gas:await estimateGas(m,{from:selectedAccount})});
+      showNotification('Rewards claimed!','success'); await waitForReadSync(receipt&&receipt.blockNumber); await loadUserData();
+    } catch(e){console.error(e);showNotification(txErrMsg(e),'warning');setButtonLoading(btn,false,orig);}
   }
 
   async function handleUnstake(index,btn,hasUnclaimed) {
-    if(!selectedAccount||!stakingContract) return;
+    if(!selectedAccount) return;
     if(hasUnclaimed){showNotification('Claim rewards first','warning');return;}
-    try{const c=await stakingContract.methods.getClaimableStakerReward(selectedAccount,index).call();if(parseFloat(web3.utils.fromWei(c,'ether'))>0.000001){showNotification('Claim rewards first','warning');return;}}catch(e){}
+    try{const c=await stakingRead.methods.getClaimableStakerReward(selectedAccount,index).call();if(parseFloat(Web3.utils.fromWei(c,'ether'))>0.000001){showNotification('Claim rewards first','warning');return;}}catch(e){}
     const orig=btn.textContent;
     try {
       setButtonLoading(btn,true,'Unstaking...');
-      const m=stakingContract.methods.unstakeToken(index);
-      await m.send({from:selectedAccount,gas:await estimateGas(m,{from:selectedAccount}),gasPrice:await getGasPrice()});
-      showNotification('Unstaked!','success'); await loadUserData();
-    } catch(e){console.error(e);showNotification(e.code===4001?'Cancelled':'Unstake failed','warning');setButtonLoading(btn,false,orig);}
+      await ensureWalletReady();
+      const m=stakingWrite.methods.unstakeToken(index);
+      const receipt=await m.send({from:selectedAccount,gas:await estimateGas(m,{from:selectedAccount})});
+      showNotification('Unstaked!','success'); await waitForReadSync(receipt&&receipt.blockNumber); await loadUserData();
+    } catch(e){console.error(e);showNotification(txErrMsg(e),'warning');setButtonLoading(btn,false,orig);}
   }
 
   async function handleClaimReferrerReward(index,btn) {
-    if(!selectedAccount||!stakingContract) return;
+    if(!selectedAccount) return;
     const orig=btn.textContent;
     try {
       setButtonLoading(btn,true,'Claiming...');
-      const m=stakingContract.methods.claimReferrerReward(index);
-      await m.send({from:selectedAccount,gas:await estimateGas(m,{from:selectedAccount}),gasPrice:await getGasPrice()});
-      showNotification('Referrer reward claimed!','success'); await loadReferrerData();
-    } catch(e){console.error(e);showNotification(e.code===4001?'Cancelled':'Claim failed','warning');setButtonLoading(btn,false,orig);}
+      await ensureWalletReady();
+      const m=stakingWrite.methods.claimReferrerReward(index);
+      const receipt=await m.send({from:selectedAccount,gas:await estimateGas(m,{from:selectedAccount})});
+      showNotification('Referrer reward claimed!','success'); await waitForReadSync(receipt&&receipt.blockNumber); await loadReferrerData();
+    } catch(e){console.error(e);showNotification(txErrMsg(e),'warning');setButtonLoading(btn,false,orig);}
   }
 
   function validateStakeAmount() {
@@ -932,7 +998,9 @@
   }
 
   function init() {
-    el.connectBtn.addEventListener('click',()=>{if(selectedAccount)handleDisconnect();else connectWallet();});
+    buildReadProvider();
+    initAppKit();
+    el.connectBtn.addEventListener('click',()=>{ if(appkitConnected) modal.disconnect(); else modal.open(); });
     el.tabs.forEach(t=>t.addEventListener('click',()=>{el.tabs.forEach(x=>x.classList.remove('active'));el.tabContents.forEach(x=>x.classList.remove('active'));t.classList.add('active');document.getElementById('fula-'+t.dataset.tab+'-tab').classList.add('active');}));
     el.stakeOptions.forEach(o=>o.addEventListener('click',()=>{el.stakeOptions.forEach(x=>x.classList.remove('selected'));o.classList.add('selected');selectedPeriod=parseInt(o.dataset.period);validateStakeAmount();}));
     el.maxBtn.addEventListener('click',()=>{el.stakeAmount.value=parseFloat(tokenBalance).toFixed(4);validateStakeAmount();});
@@ -940,7 +1008,6 @@
     el.stakeBtn.addEventListener('click',handleStake);
     el.copyLinkBtn.addEventListener('click',()=>{if(!el.referrerLink.value){showNotification('Connect wallet first','warning');return;}el.referrerLink.select();document.execCommand('copy');showNotification('Link copied!','success');});
     el.termsContainer.addEventListener('click',e=>{if(e.target.tagName==='A')return;if(e.target!==el.termsCheckbox)el.termsCheckbox.checked=!el.termsCheckbox.checked;termsAccepted=el.termsCheckbox.checked;el.termsContainer.classList.toggle('checked',termsAccepted);validateStakeAmount();});
-    if(localStorage.getItem('fula-wallet-connected')&&window.ethereum) setTimeout(connectWallet,500);
     const urlRef=new URLSearchParams(window.location.search).get('referrer'); if(urlRef) el.referrerInput.value=urlRef;
   }
 
