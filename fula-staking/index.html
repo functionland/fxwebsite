@@ -14,6 +14,7 @@
   <link rel="icon" type="image/png" href="../assets/images/logo/fula-icon-green.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/header.css">
@@ -913,11 +914,9 @@
 <!-- Web3.js library -->
 <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
 
-<!-- WalletConnect Provider -->
-<script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
-
 <!-- JavaScript Code -->
-<script>
+<script type="module">
+import { WagmiAdapter, createAppKit, networks, WagmiCore } from 'https://cdn.jsdelivr.net/npm/@reown/appkit-cdn@1.8.20/dist/appkit.js';
   // Helper functions
   function formatAddress(address) {
     return address.substring(0, 6) + '...' + address.substring(address.length - 4);
@@ -1230,13 +1229,24 @@
 
     // State variables
     let web3;
-    let currentWeb3Provider = null; // To store the active provider (Metamask or WalletConnect)
-    let walletConnectProviderInstance = null; // To store WalletConnect provider instance specifically
     let stakingContract;
     let tokenContract;
     let selectedAccount;
     let selectedNetwork = 'base'; // Default to base network
     let selectedPeriod = null;
+    // ---- Reown AppKit + read/write split ----
+    const PROJECT_ID = '192a8f5e8d1742ea923be485e60f2612';
+    const APPKIT_NETWORKS = { ethereum: networks.mainnet, base: networks.base, iotex: networks.iotex, skale: networks.skaleEuropa };
+    const CHAIN_IDS = { ethereum: 1, base: 8453, iotex: 4689, skale: 2046399126 };
+    const READ_RPCS = {
+      ethereum: ['https://eth.drpc.org','https://ethereum-rpc.publicnode.com','https://rpc.ankr.com/eth'],
+      base: ['https://mainnet.base.org','https://base-rpc.publicnode.com','https://base.drpc.org'],
+      iotex: ['https://babel-api.mainnet.iotex.io','https://iotex-rpc.publicnode.com'],
+      skale: ['https://mainnet.skalenodes.com/v1/elated-tan-skat']
+    };
+    const readRpcIdx = { ethereum: 0, base: 0, iotex: 0, skale: 0 };
+    let modal = null, eip155Provider = null, appkitConnected = false;
+    let walletWeb3 = null, walletStaking = null, walletToken = null;
     let userStakes = [];
     let referrerRewards = [];
     let tokenBalance = 0;
@@ -1310,21 +1320,15 @@
 
       // Set up event listeners
       connectButton.addEventListener('click', () => {
-        if (selectedAccount) {
-          disconnectWallet();
+        if (appkitConnected) {
+          modal.disconnect();
         } else {
-          connectWallet();
+          modal.open();
         }
       });
-      
+
       networkSelector.addEventListener('change', async () => {
-        // Save selected network to localStorage
-        localStorage.setItem('fula-network-selected', networkSelector.value);
-        selectedNetwork = networkSelector.value;
-        
-        await switchNetwork(selectedNetwork); // Ask wallet to switch
-        await waitForNetwork(selectedNetwork); // Wait for network to actually switch
-        await handleNetworkChange(true); // Pass flag for user-initiated
+        await changeNetwork(networkSelector.value);
       });
       
       maxStakeButton.addEventListener('click', setMaxAmount);
@@ -1345,8 +1349,10 @@
       
       stakeAmountInput.addEventListener('input', validateStakeAmount);
       
-      // Check if Web3 is already injected
-      checkWeb3Availability();
+      // Read provider + global stats, then initialize Reown AppKit (auto-reconnects).
+      buildReadProvider();
+      loadGlobalStats();
+      initAppKit();
     }
 
     // Function to extract URL parameters
@@ -1379,333 +1385,141 @@
       }
     }
 
-    function checkWeb3Availability() {
-      if (window.ethereum) {
-        web3 = new Web3(window.ethereum);
-        
-        // Listen for account changes
-        window.ethereum.on('accountsChanged', handleAccountsChanged);
-        
-        // Listen for network changes
-        window.ethereum.on('chainChanged', async (chainId) => {
-          // Gracefully handle network change without reloading
-          await handleNetworkChange(false);
-        });
-        
-        // Auto-connect if previously connected
-        if (localStorage.getItem('walletConnected') === 'true') {
-          connectWallet();
-        }
-      } else {
-        showNotification('No Ethereum wallet detected. Please install MetaMask or another Web3 wallet.', 'error');
-      }
+    // ---- Read provider: per-network public RPC (with fallbacks). Used for ALL reads, ----
+    // ---- so balances/stats load reliably regardless of the connected wallet. ----
+    function buildReadProvider() {
+      const list = READ_RPCS[selectedNetwork] || ['https://mainnet.base.org'];
+      const url = list[readRpcIdx[selectedNetwork] % list.length];
+      web3 = new Web3(new Web3.providers.HttpProvider(url));
+      const contractAddress = contractAddresses[selectedNetwork];
+      stakingContract = (contractAddress && contractAddress !== '0x0000000000000000000000000000000000000000') ? new web3.eth.Contract(contractABI, contractAddress) : null;
+      const tokenAddress = tokenAddresses[selectedNetwork];
+      tokenContract = tokenAddress ? new web3.eth.Contract(tokenABI, tokenAddress) : null;
+    }
+    function rotateReadRpc() {
+      const list = READ_RPCS[selectedNetwork] || [];
+      readRpcIdx[selectedNetwork] = (readRpcIdx[selectedNetwork] + 1) % Math.max(1, list.length);
+      buildReadProvider();
     }
 
     async function loadGlobalStats() {
-      try {
-        // Initialize web3 with a public provider if not already initialized
-        if (!web3) {
-          // Use a public RPC endpoint for the selected network
-          const publicRpcUrls = {
-		    ethereum: 'https://eth.drpc.org',
-            base: 'https://mainnet.base.org',
-            iotex: 'https://babel-api.mainnet.iotex.io',
-            skale: 'https://mainnet.skalenodes.com/v1/elated-tan-skat'
-          };
-          
-          web3 = new Web3(new Web3.providers.HttpProvider(publicRpcUrls[selectedNetwork]));
-        }
-        
+      if (!web3) buildReadProvider();
+      const run = async () => {
         const contractAddress = contractAddresses[selectedNetwork];
-        
-        // Check contract address validity before making contract calls
         if (!contractAddress || contractAddress === '0x0000000000000000000000000000000000000000') {
-          console.error('Invalid contract address for network:', selectedNetwork);
           totalStakedElement.textContent = 'Contract not deployed';
           totalStakersElement.textContent = 'N/A';
           totalReferrersElement.textContent = 'N/A';
           return;
         }
-        
-        // Create a new contract instance for this specific call
-        // This ensures we're using the correct ABI and address for the current network
         const contract = new web3.eth.Contract(contractABI, contractAddress);
-        
-        // Get total staked amount
         const totalStaked = await contract.methods.getTotalStaked().call();
-        const totalStakedFormatted = web3.utils.fromWei(totalStaked, 'ether');
-        totalStakedElement.textContent = parseFloat(totalStakedFormatted).toLocaleString() + ' FULA';
-        
-        // Get total stakers count
-        try {
-          const allStakers = await contract.methods.getAllStakerAddresses().call();
-          totalStakersElement.textContent = allStakers.length.toLocaleString();
-        } catch (error) {
-          console.error('Error loading total stakers:', error);
-          totalStakersElement.textContent = 'N/A';
-        }
-        
-        // Get total referrers count
-        try {
-          const allReferrers = await contract.methods.getAllReferrerAddresses().call();
-          totalReferrersElement.textContent = allReferrers.length.toLocaleString();
-        } catch (error) {
-          console.error('Error loading total referrers:', error);
-          totalReferrersElement.textContent = 'N/A';
-        }
-        
-        // Update contract address display
+        totalStakedElement.textContent = parseFloat(web3.utils.fromWei(totalStaked, 'ether')).toLocaleString() + ' FULA';
+        try { const allStakers = await contract.methods.getAllStakerAddresses().call(); totalStakersElement.textContent = allStakers.length.toLocaleString(); }
+        catch (e) { console.error('Error loading total stakers:', e); totalStakersElement.textContent = 'N/A'; }
+        try { const allReferrers = await contract.methods.getAllReferrerAddresses().call(); totalReferrersElement.textContent = allReferrers.length.toLocaleString(); }
+        catch (e) { console.error('Error loading total referrers:', e); totalReferrersElement.textContent = 'N/A'; }
         updateContractAddressDisplay();
-      } catch (error) {
+      };
+      try { await run(); }
+      catch (error) {
         console.error('Error loading global stats:', error);
-        totalStakedElement.textContent = 'Error loading data';
-        totalStakersElement.textContent = 'Error loading data';
-        totalReferrersElement.textContent = 'Error loading data';
+        const list = READ_RPCS[selectedNetwork] || [];
+        let ok = false;
+        for (let i = 0; i < list.length - 1; i++) { rotateReadRpc(); try { await run(); ok = true; break; } catch (e2) { console.error('Fallback RPC failed:', e2); } }
+        if (!ok) { totalStakedElement.textContent = 'Error loading data'; totalStakersElement.textContent = 'Error loading data'; totalReferrersElement.textContent = 'Error loading data'; }
       }
     }
 
-    async function connectWallet() {
-      if (!window.ethereum) {
-        showNotification('No Ethereum wallet detected. Please install MetaMask or another Web3 wallet.', 'error');
-        return;
-      }
-      
-      try {
-        connectButton.disabled = true;
-        connectButton.innerHTML = '<span class="fula-loading"></span> Connecting...';
-        
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        handleAccountsChanged(accounts);
-        
-        // Switch to the selected network
-        await switchNetwork(selectedNetwork);
-        
-        localStorage.setItem('walletConnected', 'true');
-        connectButton.textContent = 'Disconnect Wallet';
-        connectButton.disabled = false;
-        connectButton.classList.add('connected');
-        updateBlockTime();
-        updateReferrerLink();
-      } catch (error) {
-        console.error('Error connecting wallet:', error);
-        showNotification('Failed to connect wallet: ' + (error.message || 'Unknown error'), 'error');
-        
-        connectButton.disabled = false;
-        connectButton.textContent = 'Connect Wallet';
-        connectButton.classList.remove('connected');
-      }
+    // ---- Reown AppKit: wallet connection (modal, WalletConnect/QR, mobile, injected) ----
+    function initAppKit() {
+      const appkitNets = [networks.mainnet, networks.base, networks.iotex, networks.skaleEuropa];
+      const wagmiAdapter = new WagmiAdapter({ networks: appkitNets, projectId: PROJECT_ID });
+      modal = createAppKit({
+        adapters: [wagmiAdapter],
+        networks: appkitNets,
+        defaultNetwork: APPKIT_NETWORKS[selectedNetwork] || networks.base,
+        projectId: PROJECT_ID,
+        metadata: {
+          name: 'FULA Staking',
+          description: 'Stake FULA tokens across Base, Ethereum, IoTeX and SKALE',
+          url: 'https://fx.land',
+          icons: ['https://fx.land/assets/images/logo/fula-icon-green.png']
+        },
+        themeMode: 'dark',
+        features: { analytics: false, email: false, socials: false }
+      });
+
+      modal.subscribeAccount(state => {
+        if (state && state.isConnected && state.address) {
+          const changed = state.address !== selectedAccount;
+          onAccountConnected(state.address, changed);
+        } else if (appkitConnected || selectedAccount) {
+          handleDisconnect();
+        }
+      });
+      // EIP-1193 provider for signing/sending; reads go through the read provider (web3).
+      modal.subscribeProviders(state => { eip155Provider = (state && state['eip155']) || null; });
+      // Restore a previous session on reload (vanilla wagmi does not auto-reconnect on its own).
+      try { WagmiCore.reconnect(wagmiAdapter.wagmiConfig); } catch (e) {}
     }
 
-    async function handleAccountsChanged(accounts) {
-      if (accounts.length === 0) {
-        // User disconnected their wallet
-        disconnectWallet();
-        return;
-      }
-      
-      selectedAccount = accounts[0];
+    function onAccountConnected(address, changed) {
+      selectedAccount = address;
+      appkitConnected = true;
       addressElement.textContent = formatAddress(selectedAccount);
       walletInfo.style.display = 'block';
-      
       connectButton.textContent = 'Disconnect Wallet';
       connectButton.disabled = false;
       connectButton.classList.add('connected');
-      
-      // Initialize contracts and load data
-      initializeContracts();
-      await loadUserData();
+      updateBlockTime();
+      updateReferrerLink();
+      if (changed) loadUserData();
     }
 
-    function disconnectWallet() {
+    function handleDisconnect() {
       selectedAccount = null;
+      appkitConnected = false;
+      eip155Provider = null;
+      walletWeb3 = null; walletStaking = null; walletToken = null;
       walletInfo.style.display = 'none';
       connectButton.textContent = 'Connect Wallet';
       connectButton.disabled = false;
       connectButton.classList.remove('connected');
       stakeButton.disabled = true;
       userStakedElement.textContent = 'N/A';
-      localStorage.removeItem('walletConnected');
     }
 
-    async function handleNetworkChange(userInitiated = false) {
-      console.log("handleNetworkChange");
-      selectedNetwork = networkSelector.value;
-      
-      // Reload global stats for the new network
+    // Build wallet (write) contracts and enforce the SELECTED network's chain before any send.
+    async function ensureWalletReady() {
+      if (!appkitConnected || !selectedAccount) throw new Error('Please connect your wallet first');
+      if (!eip155Provider) throw new Error('Wallet provider not ready, please try again');
+      const targetId = CHAIN_IDS[selectedNetwork];
+      let cid = parseInt(await eip155Provider.request({ method: 'eth_chainId' }), 16);
+      if (cid !== targetId) {
+        try { await modal.switchNetwork(APPKIT_NETWORKS[selectedNetwork]); } catch (e) {}
+        cid = parseInt(await eip155Provider.request({ method: 'eth_chainId' }), 16);
+        if (cid !== targetId) throw new Error('Please switch your wallet to the ' + selectedNetwork + ' network');
+      }
+      walletWeb3 = new Web3(eip155Provider);
+      walletStaking = new walletWeb3.eth.Contract(contractABI, contractAddresses[selectedNetwork]);
+      walletToken = new walletWeb3.eth.Contract(tokenABI, tokenAddresses[selectedNetwork]);
+    }
+
+    // Dropdown is the source of truth for which network is displayed.
+    async function changeNetwork(net) {
+      selectedNetwork = net;
+      localStorage.setItem('fula-network-selected', net);
+      readRpcIdx[net] = 0;
+      buildReadProvider();
+      gasLabel.textContent = (gasSymbols[selectedNetwork] || 'ETH') + ' for Gas:';
       await loadGlobalStats();
-      
-      if (selectedAccount) {
-        try {
-          if (userInitiated) {
-            await switchNetwork(selectedNetwork);
-            await waitForNetwork(selectedNetwork); // Wait for network to actually switch
-          }
-          initializeContracts();
-          await loadUserData();
-        } catch (error) {
-          console.error('Error switching network:', error);
-          showNotification('Failed to switch network: ' + (error.message || 'Unknown error'), 'error');
-        }
+      if (appkitConnected && selectedAccount) {
+        try { await modal.switchNetwork(APPKIT_NETWORKS[net]); } catch (e) {}
+        await loadUserData();
       }
       updateBlockTime();
     }
-
-    async function switchNetwork(networkName) {
-      if (!window.ethereum) return;
-      
-      const networkParams = {
-	    ethereum: {
-          chainId: '0x1', // 1 in hex
-          chainName: 'Ethereum Mainnet',
-          nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
-          rpcUrls: ['https://eth.drpc.org'],
-          blockExplorerUrls: ['https://etherscan.org']
-        },
-        base: {
-          chainId: '0x2105', // 8453 in hex
-          chainName: 'Base Mainnet',
-          nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
-          rpcUrls: ['https://mainnet.base.org'],
-          blockExplorerUrls: ['https://basescan.org']
-        },
-        iotex: {
-          chainId: '0x1251', // 4689 in hex
-          chainName: 'IoTeX Mainnet',
-          nativeCurrency: { name: 'IOTX', symbol: 'IOTX', decimals: 18 },
-          rpcUrls: ['https://babel-api.mainnet.iotex.io'],
-          blockExplorerUrls: ['https://iotexscan.io']
-        },
-        skale: {
-          chainId: '0x79f99296', // 1351057110 in hex
-          chainName: 'SKALE Network',
-          nativeCurrency: { name: 'SKALE', symbol: 'SKL', decimals: 18 },
-          rpcUrls: ['https://mainnet.skalenodes.com/v1/elated-tan-skat'],
-          blockExplorerUrls: ['https://elated-tan-skat.explorer.mainnet.skalenodes.com']
-        },
-        hardhat: {
-          chainId: '0x7A69', // 31337 in hex
-          chainName: 'Hardhat Local Network',
-          nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
-          rpcUrls: ['http://127.0.0.1:8545'],
-          blockExplorerUrls: []
-        }
-      };
-      
-      const params = networkParams[networkName];
-      
-      try {
-        // Try to switch to the network
-        await window.ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: params.chainId }]
-        });
-      } catch (error) {
-        // If the network is not added to MetaMask, add it
-        if (error.code === 4902) {
-          await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [params]
-          });
-        } else {
-          throw error;
-        }
-      }
-    }
-
-    async function waitForNetwork(targetNetwork) {
-      // Map your network names to chainIds (as lowercase hex strings with 0x prefix)
-      const chainIds = {
-	    ethereum: '0x1',
-        base: '0x2105',
-        iotex: '0x1251',
-        skale: '0x79f99296',
-        hardhat: '0x7a69'
-      };
-      const targetChainId = chainIds[targetNetwork]?.toLowerCase();
-      if (!targetChainId) {
-        console.error('Unknown network:', targetNetwork);
-        return;
-      }
-      
-      if (!window.ethereum) {
-        console.error('No ethereum provider available');
-        return;
-      }
-      
-      let currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
-      currentChainId = currentChainId.toLowerCase();
-      
-      if (currentChainId === targetChainId) return; // Already on correct network
-      
-      // Prevent multiple simultaneous requests
-      if (window.fulaNetworkSwitchPending) {
-        showNotification('Please approve or reject the pending network switch in MetaMask.', 'error');
-        throw new Error('Network switch already pending. Please approve or reject in MetaMask.');
-      }
-      
-      window.fulaNetworkSwitchPending = true;
-      try {
-        await window.ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: targetChainId }]
-        });
-      } catch (switchError) {
-        if (switchError.code === 4001) {
-          throw new Error('Please approve the network switch in MetaMask.');
-        } else if (switchError.message && switchError.message.includes('already pending')) {
-          showNotification('Please approve or reject the pending network switch in MetaMask.', 'error');
-          throw new Error('Network switch already pending. Please approve or reject in MetaMask.');
-        } else {
-          throw new Error('Network switch failed: ' + (switchError.message || switchError));
-        }
-      } finally {
-        window.fulaNetworkSwitchPending = false;
-      }
-      
-      // Wait for the network to actually switch
-      for (let i = 0; i < 30; i++) {
-        await new Promise(res => setTimeout(res, 100));
-        currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
-        currentChainId = currentChainId.toLowerCase();
-        if (currentChainId === targetChainId) return;
-      }
-      
-      console.error('waitForNetwork timeout: wanted', targetChainId, 'got', currentChainId);
-      throw new Error('Network did not switch in time. Please check MetaMask and try again.');
-    }
-
-    function initializeContracts() {
-      try {
-        if (!web3 || !selectedNetwork) {
-          console.error('Web3 or selectedNetwork not available');
-          return;
-        }
-        
-        const contractAddress = contractAddresses[selectedNetwork];
-        
-        // Check contract address validity before making contract calls
-        if (!contractAddress || contractAddress === '0x0000000000000000000000000000000000000000') {
-          console.error('Invalid contract address for network:', selectedNetwork);
-          return;
-        }
-        
-        // Create new contract instances with the current web3 provider and network
-        stakingContract = new web3.eth.Contract(contractABI, contractAddress);
-        
-        // Always use the actual token contract for tokenContract
-        const tokenAddress = tokenAddresses[selectedNetwork];
-        if (tokenAddress) {
-          tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
-        } else {
-          tokenContract = null;
-          console.error('No token address for network:', selectedNetwork);
-        }
-      } catch (error) {
-        console.error('Error initializing contracts:', error);
-        showNotification('Failed to initialize contracts: ' + (error.message || 'Unknown error'), 'error');
-      }
-    }
-
     async function loadUserData() {
       // Ensure network is switched before loading user data
       if (!selectedAccount || !stakingContract) return;
@@ -2068,13 +1882,14 @@
       try {
         stakeButton.disabled = true;
         stakeButton.innerHTML = '<span class="fula-loading"></span> Processing...';
-        
+        await ensureWalletReady();
+
         // Check allowance
         const allowance = await tokenContract.methods.allowance(selectedAccount, stakingContract.options.address).call();
         
         if (BigInt(allowance) < BigInt(amountWei)) {
           // Prepare approve transaction with explicit gas parameters
-          const approveMethod = tokenContract.methods.approve(stakingContract.options.address, amountWei);
+          const approveMethod = walletToken.methods.approve(stakingContract.options.address, amountWei);
           const gasLimit = await estimateGasWithFallback(approveMethod, { from: selectedAccount });
           const gasPrice = await getGasPriceWithFallback();
           
@@ -2091,9 +1906,9 @@
         let stakeParams = { from: selectedAccount };
         
         if (referrer && web3.utils.isAddress(referrer) && referrer !== selectedAccount) {
-          stakeMethod = stakingContract.methods.stakeTokenWithReferrer(amountWei, lockPeriods[selectedPeriod], referrer);
+          stakeMethod = walletStaking.methods.stakeTokenWithReferrer(amountWei, lockPeriods[selectedPeriod], referrer);
         } else {
-          stakeMethod = stakingContract.methods.stakeToken(amountWei, lockPeriods[selectedPeriod]);
+          stakeMethod = walletStaking.methods.stakeToken(amountWei, lockPeriods[selectedPeriod]);
         }
         
         // Estimate gas with fallback and get current gas price
@@ -2136,8 +1951,9 @@
         unstakeButton.disabled = true;
         unstakeButton.innerHTML = '<span class="fula-loading"></span> Processing...';
         
+        await ensureWalletReady();
         // Prepare unstake transaction
-        const unstakeMethod = stakingContract.methods.unstakeToken(index);
+        const unstakeMethod = walletStaking.methods.unstakeToken(index);
         
         // Estimate gas with fallback and get current gas price
         const gasLimit = await estimateGasWithFallback(unstakeMethod, { from: selectedAccount });
@@ -2175,8 +1991,9 @@
         claimButton.disabled = true;
         claimButton.innerHTML = '<span class="fula-loading"></span> Processing...';
         
+        await ensureWalletReady();
         // Prepare claim transaction
-        const claimMethod = stakingContract.methods.claimStakerReward(index);
+        const claimMethod = walletStaking.methods.claimStakerReward(index);
         
         // Estimate gas with fallback and get current gas price
         const gasLimit = await estimateGasWithFallback(claimMethod, { from: selectedAccount });
@@ -2215,8 +2032,9 @@
           claimButton.innerHTML = '<span class="fula-loading"></span> Processing...';
         }
         
+        await ensureWalletReady();
         // Prepare claim transaction
-        const claimMethod = stakingContract.methods.claimReferrerReward(index);
+        const claimMethod = walletStaking.methods.claimReferrerReward(index);
         
         // Estimate gas with fallback and get current gas price
         const gasLimit = await estimateGasWithFallback(claimMethod, { from: selectedAccount });
