@@ -661,16 +661,35 @@ import { WagmiAdapter, createAppKit, networks, WagmiCore } from 'https://cdn.jsd
     updateDisconnectedUI();
   }
 
+  // Robustly get the wallet onto Base. Multi-chain WalletConnect wallets (e.g. TrustWallet) update
+  // their chainId asynchronously via a `chainChanged` event AFTER switchNetwork() resolves, so a
+  // single immediate eth_chainId re-read is stale and falsely fails. Try AppKit switch, then a raw
+  // wallet_switchEthereumChain (+ add-chain on 4902), then poll ~2s for the change to land — and
+  // also accept Wagmi's reported chain (currentChainId from subscribeNetwork).
+  async function ensureOnBase() {
+    const readChain = async () => parseInt(await eip155Provider.request({ method:'eth_chainId' }), 16);
+    try { if(await readChain() === CONFIG.CHAIN_ID) return true; } catch(e) {}
+    try { await modal.switchNetwork(networks.base); } catch(e) { console.warn('switchNetwork failed', e); }
+    try {
+      await eip155Provider.request({ method:'wallet_switchEthereumChain', params:[{ chainId: CONFIG.CHAIN_ID_HEX }] });
+    } catch(e) {
+      if(e && e.code === 4902) {
+        try { await eip155Provider.request({ method:'wallet_addEthereumChain', params:[{ chainId: CONFIG.CHAIN_ID_HEX, chainName: CONFIG.CHAIN_NAME, rpcUrls:[CONFIG.RPC_URL], nativeCurrency:{ name:'Ether', symbol:'ETH', decimals:18 }, blockExplorerUrls:[CONFIG.EXPLORER_URL] }] }); } catch(_) {}
+      } else { console.warn('wallet_switchEthereumChain failed', e); }
+    }
+    for(let i=0;i<6;i++) {
+      try { if(await readChain() === CONFIG.CHAIN_ID) return true; } catch(e) {}
+      if(currentChainId === CONFIG.CHAIN_ID) return true;
+      await new Promise(r => setTimeout(r, 350));
+    }
+    return false;
+  }
+
   // Ensure we can transact: connected, on Base, with fresh write contracts bound to the live provider.
   async function ensureWalletReady() {
     if(!appkitConnected || !selectedAccount) throw { code:'NOT_CONNECTED' };
     if(!eip155Provider) throw { code:'NO_PROVIDER' };
-    let cid = parseInt(await eip155Provider.request({ method:'eth_chainId' }), 16);
-    if(cid !== CONFIG.CHAIN_ID) {
-      try { await modal.switchNetwork(networks.base); } catch(e) {}
-      cid = parseInt(await eip155Provider.request({ method:'eth_chainId' }), 16);
-      if(cid !== CONFIG.CHAIN_ID) throw { code:'WRONG_NETWORK' };
-    }
+    if(!(await ensureOnBase())) throw { code:'WRONG_NETWORK' };
     web3 = new Web3(eip155Provider);
     stakingWrite = new web3.eth.Contract(STAKING_ABI, CONFIG.STAKING_CONTRACT);
     tokenWrite = new web3.eth.Contract(TOKEN_ABI, CONFIG.TOKEN_CONTRACT);
@@ -909,9 +928,33 @@ import { WagmiAdapter, createAppKit, networks, WagmiCore } from 'https://cdn.jsd
     return div;
   }
 
-  async function estimateGas(method,params) {
-    try{return Math.ceil(Number(await method.estimateGas(params))*1.2);}
-    catch(e){const limits={stakeToken:460000,stakeTokenWithReferrer:900000,unstakeToken:500000,claimStakerReward:300000,claimReferrerReward:300000,approve:200000};return limits[method._method?.name]||600000;}
+  // Estimate gas on the reliable READ RPC. The wallet provider (esp. mobile WalletConnect) is
+  // unreliable for eth_estimateGas and often reverts right after approve (its node hasn't indexed
+  // the new allowance yet), which previously forced a too-low static fallback and OOG-reverted the
+  // stake. Real gas scales with the user's active-stake count, so a live estimate is primary;
+  // FALLBACK is a last resort only. Oversized limits are harmless (unused gas is refunded).
+  async function estimateGas(encodedData, toAddr, fallbackKey) {
+    try {
+      const g = await readWeb3.eth.estimateGas({ from: selectedAccount, to: toAddr, data: encodedData });
+      return Math.ceil(Number(g) * 1.4); // headroom for EIP-150 63/64 nested-call forwarding
+    } catch(e) {
+      console.warn('estimateGas fallback', fallbackKey, e);
+      const FALLBACK = { approve:120000, stakeToken:700000, stakeTokenWithReferrer:1200000, unstakeToken:600000, claimStakerReward:400000, claimReferrerReward:400000 };
+      return FALLBACK[fallbackKey] || 800000;
+    }
+  }
+
+  // Base-appropriate EIP-1559 fees, read from the public RPC. Counters wallets (e.g. TrustWallet)
+  // that otherwise apply an Ethereum-scale ~2.5 gwei tip on Base (~100x too high). If a wallet
+  // ignores dApp-supplied fees it just uses its own estimate — no worse than before.
+  async function getFeeParams() {
+    try {
+      const blk = await readWeb3.eth.getBlock('latest');
+      const base = BigInt(blk.baseFeePerGas);
+      const priority = 5000000n;                        // 0.005 gwei tip (Base needs ~0)
+      const maxFee = base * 2n + 50000000n + priority;  // base*2 + 0.05 gwei spike headroom + tip
+      return { maxFeePerGas: maxFee, maxPriorityFeePerGas: priority };
+    } catch(e) { return {}; } // on failure set nothing -> wallet decides
   }
 
   function txErrMsg(e) {
@@ -934,12 +977,15 @@ import { WagmiAdapter, createAppKit, networks, WagmiCore } from 'https://cdn.jsd
       if(BigInt(allowance)<BigInt(amountWei)) {
         setButtonLoading(el.stakeBtn,true,'Approving...');
         const approveMethod=tokenWrite.methods.approve(CONFIG.STAKING_CONTRACT,amountWei);
-        await approveMethod.send({from:selectedAccount,gas:await estimateGas(approveMethod,{from:selectedAccount})});
+        const approveReceipt=await approveMethod.send({from:selectedAccount,gas:await estimateGas(approveMethod.encodeABI(),CONFIG.TOKEN_CONTRACT,'approve'),...(await getFeeParams())});
+        // Wait until the read RPC sees the new allowance so the stake gas-estimate below doesn't revert.
+        await waitForReadSync(approveReceipt&&approveReceipt.blockNumber);
       }
       setButtonLoading(el.stakeBtn,true,'Staking...');
-      let stakeMethod; if(referrer&&Web3.utils.isAddress(referrer)&&referrer.toLowerCase()!==selectedAccount.toLowerCase()) stakeMethod=stakingWrite.methods.stakeTokenWithReferrer(amountWei,lockPeriod,referrer);
-      else stakeMethod=stakingWrite.methods.stakeToken(amountWei,lockPeriod);
-      const receipt=await stakeMethod.send({from:selectedAccount,gas:await estimateGas(stakeMethod,{from:selectedAccount})});
+      const useReferrer=referrer&&Web3.utils.isAddress(referrer)&&referrer.toLowerCase()!==selectedAccount.toLowerCase();
+      const stakeMethod=useReferrer?stakingWrite.methods.stakeTokenWithReferrer(amountWei,lockPeriod,referrer):stakingWrite.methods.stakeToken(amountWei,lockPeriod);
+      const stakeGas=await estimateGas(stakeMethod.encodeABI(),CONFIG.STAKING_CONTRACT,useReferrer?'stakeTokenWithReferrer':'stakeToken');
+      const receipt=await stakeMethod.send({from:selectedAccount,gas:stakeGas,...(await getFeeParams())});
       showNotification('Successfully staked '+amount+' FULA!','success');
       el.stakeAmount.value=''; el.referrerInput.value=''; el.stakeOptions.forEach(o=>o.classList.remove('selected')); selectedPeriod=null;
       el.termsCheckbox.checked=false; termsAccepted=false; el.termsContainer.classList.remove('checked');
@@ -956,7 +1002,7 @@ import { WagmiAdapter, createAppKit, networks, WagmiCore } from 'https://cdn.jsd
       setButtonLoading(btn,true,'Claiming...');
       await ensureWalletReady();
       const m=stakingWrite.methods.claimStakerReward(index);
-      const receipt=await m.send({from:selectedAccount,gas:await estimateGas(m,{from:selectedAccount})});
+      const receipt=await m.send({from:selectedAccount,gas:await estimateGas(m.encodeABI(),CONFIG.STAKING_CONTRACT,'claimStakerReward'),...(await getFeeParams())});
       showNotification('Rewards claimed!','success'); await waitForReadSync(receipt&&receipt.blockNumber); await loadUserData();
     } catch(e){console.error(e);showNotification(txErrMsg(e),'warning');setButtonLoading(btn,false,orig);}
   }
@@ -970,7 +1016,7 @@ import { WagmiAdapter, createAppKit, networks, WagmiCore } from 'https://cdn.jsd
       setButtonLoading(btn,true,'Unstaking...');
       await ensureWalletReady();
       const m=stakingWrite.methods.unstakeToken(index);
-      const receipt=await m.send({from:selectedAccount,gas:await estimateGas(m,{from:selectedAccount})});
+      const receipt=await m.send({from:selectedAccount,gas:await estimateGas(m.encodeABI(),CONFIG.STAKING_CONTRACT,'unstakeToken'),...(await getFeeParams())});
       showNotification('Unstaked!','success'); await waitForReadSync(receipt&&receipt.blockNumber); await loadUserData();
     } catch(e){console.error(e);showNotification(txErrMsg(e),'warning');setButtonLoading(btn,false,orig);}
   }
@@ -982,7 +1028,7 @@ import { WagmiAdapter, createAppKit, networks, WagmiCore } from 'https://cdn.jsd
       setButtonLoading(btn,true,'Claiming...');
       await ensureWalletReady();
       const m=stakingWrite.methods.claimReferrerReward(index);
-      const receipt=await m.send({from:selectedAccount,gas:await estimateGas(m,{from:selectedAccount})});
+      const receipt=await m.send({from:selectedAccount,gas:await estimateGas(m.encodeABI(),CONFIG.STAKING_CONTRACT,'claimReferrerReward'),...(await getFeeParams())});
       showNotification('Referrer reward claimed!','success'); await waitForReadSync(receipt&&receipt.blockNumber); await loadReferrerData();
     } catch(e){console.error(e);showNotification(txErrMsg(e),'warning');setButtonLoading(btn,false,orig);}
   }
