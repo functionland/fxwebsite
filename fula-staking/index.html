@@ -1240,11 +1240,16 @@ import { WagmiAdapter, createAppKit, networks, WagmiCore } from 'https://cdn.jsd
     const CHAIN_IDS = { ethereum: 1, base: 8453, iotex: 4689, skale: 2046399126 };
     const READ_RPCS = {
       ethereum: ['https://eth.drpc.org','https://ethereum-rpc.publicnode.com','https://rpc.ankr.com/eth'],
-      base: ['https://mainnet.base.org','https://base-rpc.publicnode.com','https://base.drpc.org'],
+      base: ['https://base-rpc.publicnode.com','https://1rpc.io/base','https://base-mainnet.public.blastapi.io','https://base.drpc.org','https://mainnet.base.org'],
       iotex: ['https://babel-api.mainnet.iotex.io','https://iotex-rpc.publicnode.com'],
       skale: ['https://mainnet.skalenodes.com/v1/elated-tan-skat']
     };
     const readRpcIdx = { ethereum: 0, base: 0, iotex: 0, skale: 0 };
+    // Multicall3 (canonical cross-chain address) — batch all per-stake reward reads into ONE request,
+    // which is what stops the public Base RPC from rate-limiting the per-stake reward calls.
+    const MULTICALL3 = '0xcA11bde05977b3631167028862bE2a173976CA11';
+    const MULTICALL3_ABI = [{"inputs":[{"components":[{"name":"target","type":"address"},{"name":"allowFailure","type":"bool"},{"name":"callData","type":"bytes"}],"name":"calls","type":"tuple[]"}],"name":"aggregate3","outputs":[{"components":[{"name":"success","type":"bool"},{"name":"returnData","type":"bytes"}],"name":"returnData","type":"tuple[]"}],"stateMutability":"view","type":"function"}];
+    let multicallContract = null, loadGen = 0;
     let modal = null, eip155Provider = null, appkitConnected = false;
     let walletWeb3 = null, walletStaking = null, walletToken = null;
     let userStakes = [];
@@ -1395,11 +1400,67 @@ import { WagmiAdapter, createAppKit, networks, WagmiCore } from 'https://cdn.jsd
       stakingContract = (contractAddress && contractAddress !== '0x0000000000000000000000000000000000000000') ? new web3.eth.Contract(contractABI, contractAddress) : null;
       const tokenAddress = tokenAddresses[selectedNetwork];
       tokenContract = tokenAddress ? new web3.eth.Contract(tokenABI, tokenAddress) : null;
+      multicallContract = new web3.eth.Contract(MULTICALL3_ABI, MULTICALL3);
     }
     function rotateReadRpc() {
       const list = READ_RPCS[selectedNetwork] || [];
       readRpcIdx[selectedNetwork] = (readRpcIdx[selectedNetwork] + 1) % Math.max(1, list.length);
       buildReadProvider();
+    }
+
+    // Run a read; on failure, rotate through the selected network's RPC fallbacks and retry. Throws only if all fail.
+    // fn must reference the CURRENT global contract so it picks up the rebuilt instance after a rotate.
+    async function callRead(fn) {
+      const list = READ_RPCS[selectedNetwork] || [];
+      const n = Math.max(1, list.length);
+      let lastErr;
+      for (let attempt = 0; attempt < n; attempt++) {
+        try { return await fn(); }
+        catch (e) { lastErr = e; console.warn('[read] failed, rotating RPC:', e && e.message); rotateReadRpc(); }
+      }
+      throw lastErr;
+    }
+    // Probe the active RPC before relying on it; rotate past dead/wrong-chain endpoints. Starts each load from the best RPC.
+    async function ensureHealthyRpc() {
+      const list = READ_RPCS[selectedNetwork] || [];
+      readRpcIdx[selectedNetwork] = 0; buildReadProvider();
+      const expected = CHAIN_IDS[selectedNetwork];
+      for (let i = 0; i < Math.max(1, list.length); i++) {
+        try { if (Number(await web3.eth.getChainId()) === expected) return true; } catch (e) {}
+        rotateReadRpc();
+      }
+      return false;
+    }
+    // Decode one Multicall3 result -> claimable in ether (string), or null on failure/empty.
+    // CRITICAL: success-but-empty/short data => null (unknown -> show Refresh), NEVER 0 (that was the silent-0 bug).
+    // A genuine zero reward is a full 32-byte word (66 hex chars) and decodes to "0" correctly.
+    function decodeClaimable(item) {
+      const ok = (item && item.success !== undefined) ? item.success : (item ? item[0] : false);
+      const data = (item && item.returnData !== undefined) ? item.returnData : (item ? item[1] : null);
+      if (!(ok === true || ok === 'true')) return null;
+      if (!data || data === '0x' || data.length < 66) return null;
+      try { return web3.utils.fromWei(String(web3.eth.abi.decodeParameter('uint256', data)), 'ether'); }
+      catch (e) { return null; }
+    }
+    // Batch getClaimableStakerReward for a list of {stake,index} via Multicall3 (ONE request).
+    // Returns an array aligned 1:1 with `active`; each element a claimable-ether string, or null (=> render Refresh).
+    // Falls back to sequential per-stake reads (each through callRead) if Multicall3 is unavailable on this chain.
+    async function fetchClaimableBatch(active) {
+      if (!active.length) return [];
+      const target = contractAddresses[selectedNetwork];
+      const calldata = active.map(a => stakingContract.methods.getClaimableStakerReward(selectedAccount, a.index).encodeABI());
+      const calls = active.map((a, k) => [target, true, calldata[k]]); // POSITIONAL tuple input (robust across web3 v1/v4)
+      try {
+        const res = await callRead(() => multicallContract.methods.aggregate3(calls).call());
+        if (Array.isArray(res) && res.length === active.length) return res.map(decodeClaimable);
+        console.warn('[multicall] length mismatch, sequential fallback');
+      } catch (e) { console.warn('[multicall] failed, sequential fallback:', e && e.message); }
+      const out = [];
+      for (const a of active) {
+        try { out.push(web3.utils.fromWei(String(await callRead(() => stakingContract.methods.getClaimableStakerReward(selectedAccount, a.index).call())), 'ether')); }
+        catch (e) { out.push(null); }
+      }
+      return out;
     }
 
     async function loadGlobalStats() {
@@ -1523,8 +1584,9 @@ import { WagmiAdapter, createAppKit, networks, WagmiCore } from 'https://cdn.jsd
     async function loadUserData() {
       // Ensure network is switched before loading user data
       if (!selectedAccount || !stakingContract) return;
-      
+
       try {
+        await ensureHealthyRpc();
         // Get token balance from correct token contract
         const tokenAddress = tokenAddresses[selectedNetwork];
         if (!tokenAddress) {
@@ -1577,115 +1639,140 @@ import { WagmiAdapter, createAppKit, networks, WagmiCore } from 'https://cdn.jsd
     }
 
     async function loadUserStakes() {
+      const gen = ++loadGen; // discard results if a newer load (account/network switch) starts while we're in flight
       try {
-        const stakes = await stakingContract.methods.getUserStakes(selectedAccount).call();
+        const stakes = await callRead(() => stakingContract.methods.getUserStakes(selectedAccount).call());
+        if (gen !== loadGen) return;
         userStakes = stakes;
-        
+
         // Clear stakes container
         stakesContainer.innerHTML = '';
-        
-        if (stakes.length === 0 || !stakes.some(stake => stake.isActive)) {
+
+        // Build the active list ONCE, preserving each stake's ON-CHAIN index (rewards are mapped back by this index).
+        const active = [];
+        for (let i = 0; i < stakes.length; i++) { if (stakes[i].isActive) active.push({ stake: stakes[i], index: i }); }
+
+        if (!active.length) {
           stakesContainer.appendChild(noStakesMessage);
+          noStakesMessage.style.display = 'block';
           return;
         }
-        
-        // Hide no stakes message
         noStakesMessage.style.display = 'none';
-        
-        // Display active stakes
-        const block = await web3.eth.getBlock('latest');
-        const blockTimestamp = block.timestamp;
-        stakes.forEach((stake, index) => {
-          if (!stake.isActive) return;
-          
-          const stakeAmount = web3.utils.fromWei(stake.amount, 'ether');
-          const startTime = new Date(stake.startTime * 1000);
-          const endTime = new Date((parseInt(stake.startTime) + parseInt(stake.lockPeriod)) * 1000);
-          const isLocked = blockTimestamp < ((parseInt(stake.startTime) + parseInt(stake.lockPeriod)));
-          
-          let periodLabel = '';
-          let apyRate = '';
-          
-          if (stake.lockPeriod == lockPeriods[90]) {
-            periodLabel = 'Short Term (90 days)';
-            apyRate = '2%';
-          } else if (stake.lockPeriod == lockPeriods[180]) {
-            periodLabel = 'Medium Term (180 days)';
-            apyRate = '6%';
-          } else if (stake.lockPeriod == lockPeriods[365]) {
-            periodLabel = 'Long Term (365 days)';
-            apyRate = '15%';
-          }
-          
-          // Calculate claimable rewards
-          let claimableRewards = 0;
-          let totalPossibleReward = 0;
-          let rewardProgress = 0;
-          
-          const stakeElement = document.createElement('div');
-          stakeElement.className = 'fula-stake-item';
-          stakeElement.innerHTML = `
-            <div class="stake-header">
-              <div class="stake-amount">${parseFloat(stakeAmount).toFixed(4)} FULA</div>
-              <div class="stake-period">${periodLabel} - ${apyRate} APY</div>
-            </div>
-            <div class="stake-details">
-              <div>Start: ${formatDate(startTime)}</div>
-              <div>End: ${formatDate(endTime)}</div>
-            </div>
-            <div class="stake-details">
-              <div>Status: ${isLocked ? 'Locked' : 'Unlocked'}</div>
-              <div>${isLocked ? 'Cannot unstake yet' : 'Ready to unstake'}</div>
-            </div>
-            <div class="stake-rewards">
-              <div>Claimable Rewards:</div>
-              <div class="fula-claimable-rewards">${claimableRewards.toFixed(6)} FULA</div>
-            </div>
-            <div class="fula-button-group">
-              <button class="claim-button" data-index="${index}" ${claimableRewards > 0 ? '' : 'disabled'}>Claim Rewards</button>
-              <button class="unstake-button" data-index="${index}" ${isLocked ? 'disabled' : ''}>Unstake</button>
-            </div>
-          `;
 
-          (async () => {
-            try {
-              claimableRewards = await stakingContract.methods.getClaimableStakerReward(selectedAccount, index).call();
-              console.log(`claimableRewards: ${claimableRewards} for account ${selectedAccount} at index ${index}`);
-              claimableRewards = parseFloat(web3.utils.fromWei(claimableRewards, 'ether'));
-              const claimableDiv = stakeElement.querySelector('.fula-claimable-rewards');
-              if (claimableDiv) claimableDiv.textContent = claimableRewards.toFixed(6) + ' FULA';
-              // Enable/disable claim button based on new value
-              const claimBtn = stakeElement.querySelector('.claim-button');
-              if (claimBtn) claimBtn.disabled = !(claimableRewards > 0);
-            } catch (e) {
-              console.error('Error fetching claimableRewards:', e);
-              claimableRewards = 0;
-            }
-          })();
-          
-          const unstakeButton = stakeElement.querySelector('.unstake-button');
-          unstakeButton.addEventListener('click', async () => {
-            // Always fetch the latest claimable rewards from the contract
-            let latestClaimable = 0;
-            try {
-              latestClaimable = await stakingContract.methods.getClaimableStakerReward(selectedAccount, index).call();
-            } catch (e) {
-              console.error('Error fetching claimableRewards before unstake:', e);
-            }
-            if (parseFloat(web3.utils.fromWei(latestClaimable, 'ether')) > 0) {
-              await handleClaimStakerReward(index);
-            }
-            handleUnstake(index);
-          });
-          
-          const claimButton = stakeElement.querySelector('.claim-button');
-          claimButton.addEventListener('click', () => handleClaimStakerReward(index));
-          
-          stakesContainer.appendChild(stakeElement);
+        const block = await callRead(() => web3.eth.getBlock('latest'));
+        if (gen !== loadGen) return;
+        const blockTimestamp = block.timestamp;
+
+        // ONE Multicall3 request for every active stake's claimable reward; rewards[k] aligns with active[k].
+        const rewards = await fetchClaimableBatch(active);
+        if (gen !== loadGen) return;
+
+        active.forEach((a, k) => {
+          const elem = createFulaStakeElement(a.stake, a.index, (rewards[k] !== undefined ? rewards[k] : null), blockTimestamp);
+          stakesContainer.appendChild(elem);
         });
       } catch (error) {
+        if (gen !== loadGen) return;
         console.error('Error loading user stakes:', error);
         stakesContainer.innerHTML = '<p>Error loading stakes. Please try again.</p>';
+      }
+    }
+
+    // `claimable` is a claimable-ether string on success, or null when the reward read failed
+    // (=> show a per-stake Refresh button + "—" placeholder instead of a misleading "0").
+    function createFulaStakeElement(stake, index, claimable, blockTimestamp) {
+      const stakeAmount = web3.utils.fromWei(stake.amount, 'ether');
+      const startTime = new Date(stake.startTime * 1000);
+      const endTime = new Date((parseInt(stake.startTime) + parseInt(stake.lockPeriod)) * 1000);
+      const isLocked = blockTimestamp < ((parseInt(stake.startTime) + parseInt(stake.lockPeriod)));
+
+      let periodLabel = '';
+      let apyRate = '';
+      if (stake.lockPeriod == lockPeriods[90]) {
+        periodLabel = 'Short Term (90 days)';
+        apyRate = '2%';
+      } else if (stake.lockPeriod == lockPeriods[180]) {
+        periodLabel = 'Medium Term (180 days)';
+        apyRate = '6%';
+      } else if (stake.lockPeriod == lockPeriods[365]) {
+        periodLabel = 'Long Term (365 days)';
+        apyRate = '15%';
+      }
+
+      const rewardFailed = (claimable === null || claimable === undefined);
+      const hasUnclaimed = !rewardFailed && parseFloat(claimable) > 0.000001;
+      const valueText = rewardFailed ? '—' : (parseFloat(claimable).toFixed(6) + ' FULA');
+      const refreshBtnHTML = rewardFailed
+        ? `<button class="fula-stake-refresh" data-index="${index}" title="Reward couldn't load — tap to retry" style="margin-left:8px;padding:3px 9px;font-size:12px;border:1px solid #81c784;background:#f1f8e9;color:#2e7d32;border-radius:4px;cursor:pointer;white-space:nowrap;">⟳ Refresh</button>`
+        : '';
+
+      const stakeElement = document.createElement('div');
+      stakeElement.className = 'fula-stake-item';
+      stakeElement.innerHTML = `
+        <div class="stake-header">
+          <div class="stake-amount">${parseFloat(stakeAmount).toFixed(4)} FULA</div>
+          <div class="stake-period">${periodLabel} - ${apyRate} APY</div>
+        </div>
+        <div class="stake-details">
+          <div>Start: ${formatDate(startTime)}</div>
+          <div>End: ${formatDate(endTime)}</div>
+        </div>
+        <div class="stake-details">
+          <div>Status: ${isLocked ? 'Locked' : 'Unlocked'}</div>
+          <div>${isLocked ? 'Cannot unstake yet' : 'Ready to unstake'}</div>
+        </div>
+        <div class="stake-rewards">
+          <div>Claimable Rewards:</div>
+          <div><span class="fula-claimable-rewards">${valueText}</span>${refreshBtnHTML}</div>
+        </div>
+        <div class="fula-button-group">
+          <button class="claim-button" data-index="${index}" ${hasUnclaimed ? '' : 'disabled'}>Claim Rewards</button>
+          <button class="unstake-button" data-index="${index}" ${(isLocked || rewardFailed) ? 'disabled' : ''}>Unstake</button>
+        </div>
+      `;
+
+      const refreshBtn = stakeElement.querySelector('.fula-stake-refresh');
+      if (refreshBtn) refreshBtn.addEventListener('click', () => refreshFulaStakeReward(index, stakeElement));
+
+      const unstakeButton = stakeElement.querySelector('.unstake-button');
+      unstakeButton.addEventListener('click', async () => {
+        // Fetch the latest claimable rewards (through RPC fallbacks). If we CANNOT confirm the amount,
+        // abort instead of unstaking — unstaking with unclaimed rewards would forfeit them.
+        let latestClaimable;
+        try {
+          latestClaimable = await callRead(() => stakingContract.methods.getClaimableStakerReward(selectedAccount, index).call());
+        } catch (e) {
+          console.error('Error fetching claimableRewards before unstake:', e);
+          showNotification('Could not verify rewards — please retry before unstaking', 'warning');
+          return;
+        }
+        if (parseFloat(web3.utils.fromWei(String(latestClaimable), 'ether')) > 0) {
+          await handleClaimStakerReward(index);
+        }
+        handleUnstake(index);
+      });
+
+      const claimButton = stakeElement.querySelector('.claim-button');
+      claimButton.addEventListener('click', () => handleClaimStakerReward(index));
+
+      return stakeElement;
+    }
+
+    // Per-stake failsafe: re-fetch just this stake's claimable reward (through the RPC fallbacks) and repaint the card.
+    async function refreshFulaStakeReward(index, el) {
+      const btn = el.querySelector('.fula-stake-refresh');
+      if (btn) { btn.disabled = true; btn.textContent = '…'; }
+      try {
+        const wei = await callRead(() => stakingContract.methods.getClaimableStakerReward(selectedAccount, index).call());
+        const val = web3.utils.fromWei(String(wei), 'ether');
+        const valEl = el.querySelector('.fula-claimable-rewards');
+        if (valEl) valEl.textContent = parseFloat(val).toFixed(6) + ' FULA';
+        if (btn) btn.remove();
+        const claimBtn = el.querySelector('.claim-button');
+        if (claimBtn) claimBtn.disabled = !(parseFloat(val) > 0.000001);
+      } catch (e) {
+        if (btn) { btn.disabled = false; btn.textContent = '⟳ Retry'; }
+        showNotification('Still busy — please tap Retry again', 'warning');
       }
     }
 
