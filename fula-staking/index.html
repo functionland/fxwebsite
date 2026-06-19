@@ -1584,9 +1584,11 @@ import { WagmiAdapter, createAppKit, networks, WagmiCore } from 'https://cdn.jsd
     async function loadUserData() {
       // Ensure network is switched before loading user data
       if (!selectedAccount || !stakingContract) return;
+      const acct = selectedAccount; // capture: AppKit can clear/switch the account during the async reads below
 
       try {
         await ensureHealthyRpc();
+        if (selectedAccount !== acct || !selectedAccount) return; // account changed/cleared mid-probe; a newer load will handle it
         // Get token balance from correct token contract
         const tokenAddress = tokenAddresses[selectedNetwork];
         if (!tokenAddress) {
@@ -1601,7 +1603,7 @@ import { WagmiAdapter, createAppKit, networks, WagmiCore } from 'https://cdn.jsd
             console.error('Error getting token decimals:', e);
           }
           
-          const balance = await tokenContractInstance.methods.balanceOf(selectedAccount).call();
+          const balance = await tokenContractInstance.methods.balanceOf(acct).call();
           tokenBalance = balance / (10 ** decimals);
           balanceElement.textContent = parseFloat(tokenBalance).toFixed(4);
         }
@@ -1610,13 +1612,13 @@ import { WagmiAdapter, createAppKit, networks, WagmiCore } from 'https://cdn.jsd
         gasLabel.textContent = (gasSymbols[selectedNetwork] || 'ETH') + ' for Gas:';
         
         // Get ETH/native balance for gas
-        const ethBalanceWei = await web3.eth.getBalance(selectedAccount);
+        const ethBalanceWei = await web3.eth.getBalance(acct);
         const ethBalance = web3.utils.fromWei(ethBalanceWei, 'ether');
         ethBalanceElement.textContent = parseFloat(ethBalance).toFixed(4);
         
         // Get user's total staked amount
         try {
-          const userTotalStaked = await stakingContract.methods.getUserTotalStaked(selectedAccount).call();
+          const userTotalStaked = await stakingContract.methods.getUserTotalStaked(acct).call();
           const userTotalStakedFormatted = web3.utils.fromWei(userTotalStaked, 'ether');
           userStakedElement.textContent = parseFloat(userTotalStakedFormatted).toFixed(4) + ' FULA';
         } catch (error) {

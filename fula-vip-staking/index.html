@@ -781,14 +781,16 @@ import { WagmiAdapter, createAppKit, networks, WagmiCore } from 'https://cdn.jsd
   }
 
   async function loadUserDataOnce() {
+    const acct = selectedAccount; // capture so a mid-load account change can't fire reads with a null address
+    if(!acct) return;
     const block = await readWeb3.eth.getBlock('latest');
     currentBlockTimestamp = Number(block.timestamp);
-    const balance = await tokenRead.methods.balanceOf(selectedAccount).call();
+    const balance = await tokenRead.methods.balanceOf(acct).call();
     tokenBalance = Web3.utils.fromWei(balance,'ether');
     el.balance.textContent = formatNumber(tokenBalance);
-    const ethBal = await readWeb3.eth.getBalance(selectedAccount);
+    const ethBal = await readWeb3.eth.getBalance(acct);
     el.ethBalance.textContent = formatNumber(Web3.utils.fromWei(ethBal,'ether'));
-    const totalStaked = await stakingRead.methods.getUserTotalStaked(selectedAccount).call();
+    const totalStaked = await stakingRead.methods.getUserTotalStaked(acct).call();
     el.userStaked.textContent = formatNumber(Web3.utils.fromWei(totalStaked,'ether'))+' FULA';
     await loadUserStakes();
     await loadReferrerData();
@@ -799,11 +801,14 @@ import { WagmiAdapter, createAppKit, networks, WagmiCore } from 'https://cdn.jsd
     if(!selectedAccount||!readWeb3) return;
     if(isLoadingData) return; // Prevent concurrent calls
     isLoadingData = true;
+    const acct = selectedAccount; // AppKit can clear/switch the account during the async reads below
     try {
       await ensureHealthyRpc();
+      if(selectedAccount !== acct || !selectedAccount) return; // account changed/cleared mid-probe; a newer load will handle it
       await loadUserDataOnce();
     } catch(e) {
       console.error(e);
+      if(!selectedAccount || selectedAccount !== acct) return; // account gone — retrying would just fail the same way
       // Primary RPC failed mid-load — try each fallback endpoint once.
       let recovered = false;
       for(let i=0;i<RPC_URLS.length-1;i++) {
