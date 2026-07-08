@@ -835,6 +835,13 @@
 }
 
 /* CTA Section */
+.cta-section__buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
 .cta-section {
   position: relative;
   background: linear-gradient(135deg, var(--color-primary) 0%, #17a348 50%, #0f9d58 100%);
