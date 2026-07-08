@@ -21,6 +21,13 @@
   margin: 0 auto var(--spacing-lg);
 }
 
+.eco-hero__buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 /* App Types */
 .app-types {
   padding: var(--spacing-3xl) 0;
