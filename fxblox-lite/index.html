@@ -19,8 +19,77 @@
   <link rel="stylesheet" href="../css/header.css">
   <link rel="stylesheet" href="../css/footer.css">
   <link rel="stylesheet" href="../css/fxblox-lite.css">
+  <style>
+    /* Toronto Crypto Week promo (tcw-) — scoped to this page */
+    .tcw-strip {
+      background: linear-gradient(135deg, #ff3d3d 0%, #ff8a00 100%);
+      color: #fff;
+    }
+    .tcw-strip__inner {
+      display: flex; align-items: center; justify-content: center;
+      gap: .6rem; flex-wrap: wrap; text-align: center;
+      padding: .7rem 1rem; font-size: .95rem; font-weight: 600;
+    }
+    .tcw-strip__inner strong { font-weight: 800; }
+    .tcw-strip__pulse {
+      width: 10px; height: 10px; border-radius: 50%; background: #fff;
+      box-shadow: 0 0 0 0 rgba(255,255,255,.7);
+      animation: tcw-pulse 1.8s infinite;
+    }
+    @keyframes tcw-pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(255,255,255,.7); }
+      70%  { box-shadow: 0 0 0 10px rgba(255,255,255,0); }
+      100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+    }
+    .tcw-sale { margin: 0 0 1.25rem; }
+    .tcw-sale__banner {
+      display: inline-flex; align-items: center; gap: .55rem;
+      background: linear-gradient(135deg, #ff3d3d 0%, #ff8a00 100%);
+      color: #fff; font-weight: 800; text-transform: uppercase;
+      letter-spacing: .03em; font-size: .8rem;
+      padding: .45rem .85rem; border-radius: 100px;
+      box-shadow: 0 6px 20px rgba(255,61,61,.35);
+    }
+    .tcw-sale__banner-badge {
+      background: rgba(0,0,0,.22); padding: .12rem .5rem;
+      border-radius: 100px; font-size: .78rem;
+    }
+    .tcw-sale__prices {
+      display: flex; align-items: baseline; flex-wrap: wrap;
+      gap: .55rem .8rem; margin: 1rem 0 0;
+    }
+    .tcw-sale__now {
+      font-size: 2.5rem; font-weight: 800; line-height: 1; color: #ffb020;
+    }
+    .tcw-sale__was {
+      font-size: 1.15rem; color: rgba(255,255,255,.5);
+      text-decoration: line-through;
+    }
+    .tcw-sale__promo {
+      margin-top: 1.1rem; padding: .9rem 1rem;
+      border: 1px dashed #ffb020; border-radius: 12px;
+      background: rgba(255,176,32,.08);
+    }
+    .tcw-sale__code-row {
+      display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;
+    }
+    .tcw-sale__code-label {
+      text-transform: uppercase; font-size: .7rem; letter-spacing: .12em;
+      color: rgba(255,255,255,.6);
+    }
+    .tcw-sale__code {
+      font-family: "Courier New", monospace; font-weight: 800;
+      font-size: 1.05rem; letter-spacing: .08em; color: #fff;
+      background: linear-gradient(135deg, #ff3d3d 0%, #ff8a00 100%);
+      padding: .3rem .7rem; border-radius: 6px; white-space: nowrap;
+    }
+    .tcw-sale__promo-note {
+      margin: .6rem 0 0; font-size: .88rem; color: rgba(255,255,255,.75);
+    }
+    .tcw-sale__promo-note strong { color: #ffb020; }
+  </style>
   <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Product","name":"FxBlox Lite","brand":{"@type":"Brand","name":"Functionland"},"description":"Compact DePIN computing device with dual access on Linux Desktop or Android/iOS apps.","image":"https://fx.land/assets/images/products/fxblox-lite/fxblox-lite-1.png","offers":{"@type":"Offer","url":"https://fx.land/fxblox-lite/","price":"1199.00","priceCurrency":"CAD","availability":"https://schema.org/InStock"}}
+{"@context":"https://schema.org","@type":"Product","name":"FxBlox Lite","brand":{"@type":"Brand","name":"Functionland"},"description":"Compact DePIN computing device with dual access on Linux Desktop or Android/iOS apps.","image":"https://fx.land/assets/images/products/fxblox-lite/fxblox-lite-1.png","offers":{"@type":"Offer","url":"https://fx.land/fxblox-lite/","price":"150.00","priceCurrency":"CAD","priceValidUntil":"2026-08-10","availability":"https://schema.org/InStock"}}
   </script>
 </head>
 <body>
@@ -62,6 +131,14 @@
   </header>
 
   <main>
+    <!-- Toronto Crypto Week promo strip -->
+    <div class="tcw-strip">
+      <div class="container tcw-strip__inner">
+        <span class="tcw-strip__pulse"></span>
+        <span>Toronto Crypto Week Sale &mdash; FxBlox Lite drops to <strong>$150&nbsp;CAD</strong> (was $1,199). Use code <strong>TORONTOTECH</strong> at checkout &middot; ends Aug&nbsp;10, 2026.</span>
+      </div>
+    </div>
+
     <!-- Product Hero -->
     <section class="pdp-hero">
       <div class="container">
@@ -86,10 +163,25 @@
         <!-- Product Info -->
         <div class="pdp-info">
           <h1 class="pdp-info__title">FxBlox Lite</h1>
-          <p class="pdp-info__price">$1,199.00 CAD <span class="pdp-info__price-note">(taxes excluded &middot; approx&nbsp;$869&nbsp;USD)</span></p>
+          <div class="tcw-sale">
+            <span class="tcw-sale__banner">Toronto Crypto Week Sale <span class="tcw-sale__banner-badge">87% OFF</span></span>
+            <p class="pdp-info__price tcw-sale__prices">
+              <span class="tcw-sale__now">$150.00 CAD</span>
+              <span class="tcw-sale__was">$1,199.00 CAD</span>
+              <span class="pdp-info__price-note">(taxes excluded &middot; approx&nbsp;$109&nbsp;USD &middot; save&nbsp;$1,049)</span>
+            </p>
+            <div class="tcw-sale__promo">
+              <div class="tcw-sale__code-row">
+                <span class="tcw-sale__code-label">Promo code</span>
+                <span class="tcw-sale__code">TORONTOTECH</span>
+              </div>
+              <p class="tcw-sale__promo-note">Enter <strong>TORONTOTECH</strong> at Square checkout to get the sale price. 3-week promotion for Toronto Crypto Week &mdash; ends Aug&nbsp;10, 2026.</p>
+            </div>
+          </div>
 
           <div class="pdp-buy">
             <a href="https://square.link/u/uUzTGtpx?src=embed" target="_blank" rel="noopener" class="btn btn--primary btn--lg pdp-buy__cta">Buy Now</a>
+            <p class="pdp-buy__meta"><strong>Enter code TORONTOTECH at checkout</strong> to apply the $150&nbsp;CAD Toronto Crypto Week price.</p>
             <p class="pdp-buy__meta">Secure checkout by Square. Pay by credit card, Apple&nbsp;Pay, or Google&nbsp;Pay.</p>
             <p class="pdp-buy__meta">Ships from Canada. Taxes and shipping calculated at checkout. By purchasing you agree to our <a href="../terms/">Terms of Use</a> and acknowledge our <a href="../privacy-policy/">Privacy Policy</a>.</p>
           </div>
@@ -316,7 +408,7 @@
         </a>
       </div>
 
-      <p class="footer__disclaimer">This website is owned and operated by Functionland Inc (Canada), an independent company whose products are FxBlox storage hardware, the FxBlox and FxFiles apps, and an on-chain loyalty platform. Functionland Inc is a community member of Fula Governance Association (Switzerland) and a grantee (receiver of grants) that receives grants to work on the development, marketing and maintenance of the Fula network. Functionland Inc is a separate and independent entity and acts independently; it has no authority to bind Fula Governance Association, does not issue, sell, distribute or manage the FULA token, the token treasury, or NFTs, and is not liable for token related matters. For information about the Fula network, the FULA token, or available grants, visit fula.network and contact Fula Governance members if you have something that adds value to the network.</p>
+      <p class="footer__disclaimer">This website is owned and operated by Functionland Inc (Canada), an independent company whose products are FxBlox storage hardware, the FxBlox and FxFiles apps, and an on-chain loyalty platform. Functionland Inc is part of the Fula community and a grantee (receiver of grants) of Fula Governance Association (Switzerland), receiving grants to work on the development, marketing and maintenance of the Fula network. Functionland Inc is incorporated under the laws of Canada and Fula Governance Association is organized under the laws of Switzerland; they are distinct legal entities, and neither has authority to bind the other. Functionland Inc acts independently and on its own account; it does not issue, sell, distribute or manage the FULA token, the token treasury, or NFTs, and is not liable for token related matters. For information about the Fula network, the FULA token, or available grants, visit fula.network and contact Fula Governance members if you have something that adds value to the network.</p>
 
       <p class="footer__copyright">&copy; 2025 Functionland. All rights reserved.</p>
     </div>
