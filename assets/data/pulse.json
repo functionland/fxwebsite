@@ -1,13 +1,14 @@
 {
-  "updated": "2026-07-13T10:55:16Z",
-  "week_of": "2026-07-13",
-  "headline": "Fula Network Hits 30 Active Nodes as DePIN Storage Gains Momentum",
-  "subtitle": "Functionland's growing node count arrives as the broader decentralized storage sector enters a phase of measurable, revenue-driven maturity.",
-  "briefing": "The Functionland FULA Network reported 30 active nodes this week, with live metrics visible at cloud.fx.land/stats \u2014 a steady infrastructure signal as the project advances its ambition to become a prominent decentralized storage platform. The timing is notable. <cite index=\"1-7\">By early 2026, DePIN's combined market capitalization sits in the $910 billion range, larger than the oracles sector, while generating tens of millions in monthly on-chain revenue from actual services.</cite> Within that sector, storage is a proven vertical: <cite index=\"10-16\">decentralized storage protocols like Filecoin aggregate unused hard drive space across thousands of nodes, offering enterprise-grade data persistence at costs 60\u201370% below centralized cloud providers.</cite> Functionland targets that same cost gap. <cite index=\"12-22,12-23\">FxBlox, the project's hardware node, costs under $1 a month to run and only needs air for cooling \u2014 up to 2x cheaper than centralized providers and up to 10x cheaper than decentralized alternatives.</cite> The network's Q2 2026 roadmap focuses on <cite index=\"11-14\">migrating larger companies and organizations' data from traditional cloud to the Fula ecosystem.</cite> With the DePIN storage category increasingly attracting enterprise buyers seeking cost relief from hyperscaler pricing, the metric to watch next is whether Functionland's node growth translates into verifiable storage demand at cloud.fx.land.",
+  "updated": "2026-07-20T10:46:22Z",
+  "week_of": "2026-07-20",
+  "headline": "Functionland Bets on AI Sovereignty as FULA Network Grows",
+  "subtitle": "With 31 active nodes and a privacy-first MCP integration, Functionland positions itself at the intersection of decentralized storage and the AI data-control movement.",
+  "briefing": "Functionland's FULA Network ticked up to 31 active nodes this week \u2014 a modest but steady gain visible in real time at cloud.fx.land/stats \u2014 as the project continues building out the community-contributed infrastructure it will need to compete in a rapidly maturing decentralized storage market. The more strategically significant development, however, may be the FxFiles MCP feature unveiled earlier this month. By allowing users to grant an AI assistant access to a single shared folder \u2014 with read and write permissions but no delete capability \u2014 Functionland is directly addressing a concern that is becoming central to enterprise AI adoption. The Model Context Protocol, originally open-sourced by Anthropic in November 2024, has seen explosive uptake: <cite index=\"27-5\">MCP SDK downloads reached 97 million per month by March 2026, with over 10,000 public servers indexed across major registries.</cite> Yet that growth has exposed real risks; <cite index=\"23-4\">Bloomberry research found that 38% of MCP servers have no authentication.</cite> Functionland's read/write-but-no-delete design principle maps directly onto the security principle of least-privilege access \u2014 exactly what regulators and security researchers are demanding. The macro tailwind is substantial: <cite index=\"4-11,4-13\">venture capital funds invested more than $740 million in DePIN projects during 2025, with some estimates suggesting the sector could reach a potential valuation of $3.5 trillion by 2028.</cite> With community integrations expanding and node count climbing, the next signal to watch is whether Functionland can translate infrastructure growth into measurable paid storage usage \u2014 the metric that now separates credible DePIN projects from speculative ones.",
   "sources": [
-    "https://www.kucoin.com/blog/en-depin-crypto-sector-2026-how-decentralized-physical-infrastructure-surpassed-oracles",
-    "https://www.bitget.com/academy/depin-infrastructure",
-    "https://fx.land/",
-    "https://fx.land/token/"
+    "https://www.langprotect.com/blog/mcp-security-enterprise-guide",
+    "https://www.paloaltonetworks.com/blog/identity-security/secure-ai-agents-controls-visibility-mcp-data-access",
+    "https://crypto-economy.com/depin-in-2026-key-insights-and-future-trends-in-decentralized-infrastructure/",
+    "https://blockeden.xyz/blog/2026/03/21/depin-march-2026-reality-check-650-projects-19b-market-cap-revenue/",
+    "https://fx.land/"
   ]
 }
