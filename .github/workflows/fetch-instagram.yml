@@ -22,13 +22,14 @@ jobs:
           INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
         run: |
           # Attempt to refresh the long-lived token (valid for 60 days)
-          RESPONSE=$(curl -sf "https://graph.instagram.com/refresh_access_token?grant_type=ig_exchange_token&access_token=${INSTAGRAM_ACCESS_TOKEN}" || true)
+          RESPONSE=$(curl -s "https://graph.instagram.com/v21.0/refresh_access_token?grant_type=ig_refresh_token&access_token=${INSTAGRAM_ACCESS_TOKEN}" || true)
           if echo "$RESPONSE" | jq -e '.access_token' > /dev/null 2>&1; then
             echo "Token refreshed successfully"
             NEW_TOKEN=$(echo "$RESPONSE" | jq -r '.access_token')
             echo "token=${NEW_TOKEN}" >> "$GITHUB_OUTPUT"
           else
-            echo "Token refresh failed or not needed, using existing token"
+            echo "Token refresh failed or not needed, using existing token. Response was:"
+            echo "$RESPONSE"
             echo "token=${INSTAGRAM_ACCESS_TOKEN}" >> "$GITHUB_OUTPUT"
           fi
 
@@ -38,11 +39,22 @@ jobs:
         run: |
           set -e
 
-          # Fetch latest 10 media posts
-          MEDIA=$(curl -sf "https://graph.instagram.com/me/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp&limit=10&access_token=${TOKEN}")
+          # Fetch latest 10 media posts using the versioned API
+          MEDIA=$(curl -s "https://graph.instagram.com/v21.0/me/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp&limit=10&access_token=${TOKEN}")
 
-          if [ -z "$MEDIA" ]; then
-            echo "Failed to fetch Instagram media"
+          # Check if the response contains an error
+          if echo "$MEDIA" | jq -e '.error' > /dev/null 2>&1; then
+            echo "Failed to fetch Instagram media. API Error:"
+            echo "$MEDIA" | jq -r '.error.message'
+            echo "---"
+            echo "NOTE: The legacy Instagram Basic Display API was permanently shut down on Dec 4, 2024."
+            echo "If your token is old, you must generate a new one using 'Instagram API with Instagram Login' or 'Instagram Graph API'."
+            exit 1
+          fi
+
+          if [ -z "$MEDIA" ] || ! echo "$MEDIA" | jq -e '.data' > /dev/null 2>&1; then
+            echo "Failed to fetch Instagram media or no data returned. Response:"
+            echo "$MEDIA"
             exit 1
           fi
 

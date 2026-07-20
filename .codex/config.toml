@@ -1,0 +1,3 @@
+[mcp_servers.graphify-fxwebsite]
+command = 'C:\Users\ehsan\.local\bin\graphify-mcp.exe'
+args = ['E:\GitHub\fxwebsite\graphify-out\graph.json']

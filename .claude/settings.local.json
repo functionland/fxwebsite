@@ -11,5 +11,8 @@
       "Bash(grep:*)",
       "Bash(find:*)"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "graphify-fxwebsite"
+  ]
 }
