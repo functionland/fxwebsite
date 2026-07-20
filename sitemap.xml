@@ -7,12 +7,6 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://fx.land/ecosystem/</loc>
-    <lastmod>2026-02-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://fx.land/use-apps/</loc>
     <lastmod>2026-02-10</lastmod>
     <changefreq>monthly</changefreq>
@@ -37,27 +31,9 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://fx.land/token/</loc>
-    <lastmod>2026-02-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://fx.land/build/</loc>
     <lastmod>2026-02-10</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://fx.land/fula-staking/</loc>
-    <lastmod>2026-02-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://fx.land/fula-vip-staking/</loc>
-    <lastmod>2026-02-10</lastmod>
-    <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
@@ -71,12 +47,6 @@
     <lastmod>2026-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://fx.land/fec-nfts/</loc>
-    <lastmod>2026-02-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://fx.land/about/</loc>
