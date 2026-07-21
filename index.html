@@ -3,6 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    /* Coin-listing referral redirect: CoinMarketCap and CoinGecko still list
+       fx.land as the FULA token website. Until they update, visitors who arrive
+       from those two sites are sent to the Fula network token page. Uses
+       location.replace so the browser Back button returns to the listing. */
+    (function () {
+      try {
+        var ref = document.referrer || '';
+        if (ref.indexOf('coinmarketcap.com') !== -1 || ref.indexOf('coingecko.com') !== -1) {
+          window.location.replace('https://fulanetwork.github.io/token/');
+        }
+      } catch (e) {}
+    })();
+  </script>
   <title>Functionland - FxBlox Hardware and FxFiles Apps | Own Your Data</title>
   <meta name="description" content="Functionland Inc builds FxBlox hardware and the FxFiles and FxBlox apps, so your photos, documents and data stay yours. Integrated with the Fula network, managed by Fula Governance DAO.">
   <meta property="og:title" content="Functionland - FxBlox Hardware and FxFiles Apps | Own Your Data">
