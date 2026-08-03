@@ -1,0 +1,14 @@
+{
+  "updated": "2026-07-27T11:14:31Z",
+  "week_of": "2026-07-27",
+  "headline": "Functionland Positions FULA at Intersection of DePIN and AI",
+  "subtitle": "With 22 active nodes and a privacy-first MCP file-sharing feature, the project is carving a distinct niche as the DePIN storage sector matures.",
+  "briefing": "Functionland's FULA Network holds steady at 22 active nodes this week, consolidating recent infrastructure gains as the team's strategic focus shifts toward product differentiation. The more consequential story remains the FxFiles MCP integration \u2014 a feature that lets users grant an AI assistant access to a single shared folder with read-and-write permissions but no deletion rights. That design choice is well-timed. The Model Context Protocol has rapidly become what TechCrunch describes as \"one of the basic building blocks of AI interoperability,\" and a key security concern with standard MCP deployments is that servers are routinely granted overly broad access to connected services. Functionland's folder-scoped, no-delete architecture directly addresses that risk \u2014 a meaningful differentiator at a moment when even the NSA has issued formal MCP security guidance. The broader market context is favorable: the DePIN sector carries a combined market cap of roughly $18.9 billion as of May 2026, with decentralized storage a core subcategory. Functionland's roadmap targets enterprise cloud migration in Q2 2026, followed by an open-source monetization plan in Q3 that would distribute revenue to node operators, app developers, and content creators alike. Watch for the Q3 monetization release \u2014 it could be the catalyst that converts node count into measurable network revenue.",
+  "sources": [
+    "https://techcrunch.com/2026/07/20/ais-most-important-protocol-is-getting-a-little-bit-easier-to-use/",
+    "https://www.wiz.io/academy/ai-security/model-context-protocol-security",
+    "https://www.spotedcrypto.com/depin-sector-guide-2026-projects-market-cap/",
+    "https://fx.land/token/",
+    "https://www.nsa.gov/Portals/75/documents/Cybersecurity/CSI_MCP_SECURITY.pdf"
+  ]
+}
