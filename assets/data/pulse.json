@@ -1,14 +1,15 @@
 {
-  "updated": "2026-08-03T11:17:05Z",
-  "week_of": "2026-08-03",
-  "headline": "FULA Network Surges to 900 Nodes Amid DePIN Storage Boom",
-  "subtitle": "Functionland's community-driven expansion puts it on a credible growth trajectory as decentralized storage demand accelerates in 2026.",
-  "briefing": "Functionland's FULA Network has reached 900 active nodes, a milestone that reflects meaningful infrastructure expansion for a project building a community-owned alternative to centralized cloud storage. <cite index=\"10-1,10-2\">Functionland positions itself as a decentralized cloud alternative, providing secure and encrypted storage through its Fula Network</cite> \u2014 and the node count growth signals that its hardware-first model is gaining traction on the ground.\n\nThe timing is favorable. <cite index=\"6-7\">By early 2026, DePIN's combined market capitalization sits in the $9\u201310 billion range, larger than the oracles sector, while generating tens of millions in monthly on-chain revenue from actual services people pay for.</cite> <cite index=\"3-15,3-16\">DePIN sits between AI demand and Web3 infrastructure \u2014 if compute, storage, and decentralized data services keep growing, useful projects stand to benefit.</cite>\n\nFunctionland's product layer is also maturing at a well-timed moment. The FxFiles MCP integration \u2014 which grants AI assistants scoped, read-write access to a single folder with no deletion rights \u2014 speaks directly to a growing security concern. <cite index=\"20-5,20-6\">Wiz Research found MCP servers in at least 80% of observed cloud environments in early 2026, and MCP has consolidated into a de facto standard faster than agent frameworks have.</cite> Functionland's permission-constrained design offers a principled answer to that exposure. Meanwhile, <cite index=\"11-1,11-2\">the team's roadmap targets migrating larger organizations' data from traditional cloud to the Fula ecosystem in Q2 2026, followed by an open-source monetization plan for developers and influencers in Q3.</cite>\n\nWatch for whether the node count continues compounding and whether the Q3 monetization roadmap produces tangible developer adoption.",
+  "updated": "2026-08-10T09:13:35Z",
+  "week_of": "2026-08-10",
+  "headline": "Functionland Bets on AI-Safe Storage as Data Sovereignty Pressure Mounts",
+  "subtitle": "With its FxFiles MCP integration and growing FULA node network, Functionland is positioning itself at the intersection of decentralized storage and user-controlled AI access.",
+  "briefing": "Functionland enters the second half of 2026 with two clear strategic signals: a FULA network expanding toward becoming a credible storage platform, and a freshly launched FxFiles MCP integration that lets users grant AI assistants access to a single, sandboxed folder \u2014 with read and write permissions, but no deletion rights. That design choice is deliberate and timely. As the EU AI Act reached full applicability this month, imposing governance requirements on AI data pipelines, and as the sovereign cloud market has grown to an estimated $80 billion \u2014 up 35.6% year-over-year \u2014 the appetite for user-controlled, decentralized storage infrastructure is materially rising.\n\nFunctionland's folder-scoped MCP approach directly addresses a gap that enterprise security researchers have flagged: most AI-file integrations today grant agents sweeping access to entire content stores, creating data exfiltration risks. By contrast, Functionland's model enforces the granular, permission-scoped access that privacy experts recommend. Meanwhile, the FULA community is independently completing new protocol integrations, a sign of organic developer engagement that larger DePIN networks like Filecoin \u2014 with nearly 3,000 storage providers \u2014 took years to cultivate.\n\nWith Q3 roadmap items including an open-source monetization plan for app developers and influencers, and the broader DePIN sector generating roughly $150 million in on-chain revenue in January 2026 alone, watch for whether Functionland can convert its privacy-first product differentiation into enterprise and developer adoption.",
   "sources": [
+    "https://neuraltrust.ai/blog/data-sovereignty-complete-guide",
+    "https://www.coderio.com/blog/software-development/data-sovereignty-and-regional-clouds-strategy-2026/",
     "https://www.kucoin.com/blog/en-depin-crypto-sector-2026-how-decentralized-physical-infrastructure-surpassed-oracles",
-    "https://bitcoinfoundation.org/news/defi/what-is-depin/",
-    "https://www.wiz.io/academy/ai-security/model-context-protocol-security",
-    "https://fx.land/token/",
-    "https://messari.io/project/functionland"
+    "https://orochi.network/blog/top-10-de-pin-projects-and-emerging-trends-in-2026",
+    "https://privacylicense.ai/blog/privacy-in-model-control-protocol--mcp---risks-and-protections",
+    "https://fx.land/token/"
   ]
 }
