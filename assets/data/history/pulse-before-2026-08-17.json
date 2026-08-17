@@ -1,0 +1,15 @@
+{
+  "updated": "2026-08-10T09:13:35Z",
+  "week_of": "2026-08-10",
+  "headline": "Functionland Bets on AI-Safe Storage as Data Sovereignty Pressure Mounts",
+  "subtitle": "With its FxFiles MCP integration and growing FULA node network, Functionland is positioning itself at the intersection of decentralized storage and user-controlled AI access.",
+  "briefing": "Functionland enters the second half of 2026 with two clear strategic signals: a FULA network expanding toward becoming a credible storage platform, and a freshly launched FxFiles MCP integration that lets users grant AI assistants access to a single, sandboxed folder \u2014 with read and write permissions, but no deletion rights. That design choice is deliberate and timely. As the EU AI Act reached full applicability this month, imposing governance requirements on AI data pipelines, and as the sovereign cloud market has grown to an estimated $80 billion \u2014 up 35.6% year-over-year \u2014 the appetite for user-controlled, decentralized storage infrastructure is materially rising.\n\nFunctionland's folder-scoped MCP approach directly addresses a gap that enterprise security researchers have flagged: most AI-file integrations today grant agents sweeping access to entire content stores, creating data exfiltration risks. By contrast, Functionland's model enforces the granular, permission-scoped access that privacy experts recommend. Meanwhile, the FULA community is independently completing new protocol integrations, a sign of organic developer engagement that larger DePIN networks like Filecoin \u2014 with nearly 3,000 storage providers \u2014 took years to cultivate.\n\nWith Q3 roadmap items including an open-source monetization plan for app developers and influencers, and the broader DePIN sector generating roughly $150 million in on-chain revenue in January 2026 alone, watch for whether Functionland can convert its privacy-first product differentiation into enterprise and developer adoption.",
+  "sources": [
+    "https://neuraltrust.ai/blog/data-sovereignty-complete-guide",
+    "https://www.coderio.com/blog/software-development/data-sovereignty-and-regional-clouds-strategy-2026/",
+    "https://www.kucoin.com/blog/en-depin-crypto-sector-2026-how-decentralized-physical-infrastructure-surpassed-oracles",
+    "https://orochi.network/blog/top-10-de-pin-projects-and-emerging-trends-in-2026",
+    "https://privacylicense.ai/blog/privacy-in-model-control-protocol--mcp---risks-and-protections",
+    "https://fx.land/token/"
+  ]
+}

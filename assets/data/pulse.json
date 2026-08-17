@@ -1,15 +1,14 @@
 {
-  "updated": "2026-08-10T09:13:35Z",
-  "week_of": "2026-08-10",
-  "headline": "Functionland Bets on AI-Safe Storage as Data Sovereignty Pressure Mounts",
-  "subtitle": "With its FxFiles MCP integration and growing FULA node network, Functionland is positioning itself at the intersection of decentralized storage and user-controlled AI access.",
-  "briefing": "Functionland enters the second half of 2026 with two clear strategic signals: a FULA network expanding toward becoming a credible storage platform, and a freshly launched FxFiles MCP integration that lets users grant AI assistants access to a single, sandboxed folder \u2014 with read and write permissions, but no deletion rights. That design choice is deliberate and timely. As the EU AI Act reached full applicability this month, imposing governance requirements on AI data pipelines, and as the sovereign cloud market has grown to an estimated $80 billion \u2014 up 35.6% year-over-year \u2014 the appetite for user-controlled, decentralized storage infrastructure is materially rising.\n\nFunctionland's folder-scoped MCP approach directly addresses a gap that enterprise security researchers have flagged: most AI-file integrations today grant agents sweeping access to entire content stores, creating data exfiltration risks. By contrast, Functionland's model enforces the granular, permission-scoped access that privacy experts recommend. Meanwhile, the FULA community is independently completing new protocol integrations, a sign of organic developer engagement that larger DePIN networks like Filecoin \u2014 with nearly 3,000 storage providers \u2014 took years to cultivate.\n\nWith Q3 roadmap items including an open-source monetization plan for app developers and influencers, and the broader DePIN sector generating roughly $150 million in on-chain revenue in January 2026 alone, watch for whether Functionland can convert its privacy-first product differentiation into enterprise and developer adoption.",
+  "updated": "2026-08-17T08:36:16Z",
+  "week_of": "2026-08-17",
+  "headline": "Functionland Builds Quietly as DePIN Storage Sector Gains Credibility",
+  "subtitle": "With 23 active nodes, community-driven integrations, and a privacy-first AI file tool, Functionland is assembling the foundations of a user-owned cloud in a market approaching $20 billion.",
+  "briefing": "Functionland enters mid-summer 2026 without a splashy announcement \u2014 and that steadiness itself is worth noting. The network's 23 active nodes continue to grow organically, driven by community contributors completing new integrations on the FULA platform. Its two most significant recent moves \u2014 the FxFiles MCP integration granting AI assistants sandboxed, read-write-only access to individual folders, and a stated Q2 goal of migrating organizations' data from traditional cloud to the Fula ecosystem \u2014 position the project at a genuinely timely intersection of forces.\n\nThe broader DePIN storage sector is no longer a speculative category. Messari pegs the aggregate DePIN market cap at roughly $20 billion in the first half of 2026, with storage as a durable revenue vertical. Meanwhile, MCP has rapidly become the connective tissue between AI agents and private data sources: Gartner projected that by 2026, 75% of API gateway vendors would incorporate MCP features \u2014 a signal that Functionland's FxFiles integration is aligned with mainstream infrastructure direction, not ahead of it.\n\nData sovereignty pressures add further tailwind. Regulatory fragmentation is accelerating globally, and as one analysis noted, \"data sovereignty laws have evolved from a niche compliance concern into a primary architectural constraint\" for cross-border organizations \u2014 exactly the environment where a user-owned, privacy-first storage layer becomes a practical alternative rather than an ideological one.\n\nFunctionland's roadmap calls for releasing an open-source monetization plan in Q3 2026, enabling revenue sharing across storers, developers, and content creators. That milestone will be the clearest test yet of whether the network can convert community momentum into a self-sustaining economic model.",
   "sources": [
-    "https://neuraltrust.ai/blog/data-sovereignty-complete-guide",
-    "https://www.coderio.com/blog/software-development/data-sovereignty-and-regional-clouds-strategy-2026/",
-    "https://www.kucoin.com/blog/en-depin-crypto-sector-2026-how-decentralized-physical-infrastructure-surpassed-oracles",
-    "https://orochi.network/blog/top-10-de-pin-projects-and-emerging-trends-in-2026",
-    "https://privacylicense.ai/blog/privacy-in-model-control-protocol--mcp---risks-and-protections",
-    "https://fx.land/token/"
+    "https://ryder.id/blogs/post/depin-in-2026-decentralized-physical-infrastructure-explained",
+    "https://solarpunk.buzz/mcp-revolution-decentralized-ai-swarm/",
+    "https://dualitytech.com/blog/country_by_country_guide/",
+    "https://fx.land/token/",
+    "https://blockeden.xyz/blog/2026/03/21/depin-march-2026-reality-check-650-projects-19b-market-cap-revenue/"
   ]
 }
