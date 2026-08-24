@@ -90,6 +90,24 @@
             opacity: 0.9;
         }
 
+        div#livemap .data-disclaimer {
+            max-width: 900px;
+            margin: 0 auto 30px;
+            padding: 14px 18px;
+            border: 1px solid rgba(255, 193, 7, 0.35);
+            border-left: 4px solid #ffc107;
+            border-radius: 10px;
+            background: rgba(255, 193, 7, 0.12);
+            color: #ffe9b0;
+            font-size: 0.95em;
+            line-height: 1.6;
+            text-align: left;
+        }
+
+        div#livemap .data-disclaimer strong {
+            color: #ffc107;
+        }
+
         div#livemap .map-container {
             background: white;
             border-radius: 15px;
@@ -383,6 +401,14 @@
             <h1>FxBlox Node Map</h1>
             <p>Global distribution of FxBlox storage nodes across the decentralized networks they connect to</p>
         </div>
+
+        <div class="data-disclaimer" role="note">
+            <strong>Please note:</strong> the information on this page is indicative only. The node list is
+            fetched live from a single network endpoint and may be incomplete, delayed, or temporarily
+            unavailable, and the map markers show regions the network spans rather than the actual location
+            of any individual node. Nothing shown here is an authoritative measure of network size or
+            activity, and it should not be relied upon when making decisions.
+        </div>
         
         <div class="map-container">
             <div id="worldmap"></div>
@@ -424,20 +450,15 @@
         }
 
         // Utility functions
-        function generateRandomPeerId() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            return '12D3Koo' + Array(44).fill().map(() => chars[Math.floor(Math.random() * chars.length)]).join('');
-        }
+        // Normalize the API payload into the nodes it actually reported.
+        // Only entries carrying a real peer ID from the API are kept - nothing is
+        // generated, padded or faked.
+        function normalizeNodes(data) {
+            const list = Array.isArray(data)
+                ? data
+                : (data && Array.isArray(data.nodes) ? data.nodes : []);
 
-        function modifyResponse(data) {
-            if (!Array.isArray(data) || data.length < 100) {
-                const additionalNodes = Array(200).fill().map(() => ({
-                    id: generateRandomPeerId(),
-                    peername: 'RandomAccount'
-                }));
-                return Array.isArray(data) ? [...data, ...additionalNodes] : additionalNodes;
-            }
-            return data;
+            return list.filter(item => item && typeof item.id === 'string' && item.id.trim() !== '');
         }
 
         function showStatus(message, type = 'info') {
@@ -672,14 +693,21 @@
                 }
                 
                 const data = await response.json();
-                const modifiedData = modifyResponse(data);
-                
-                currentData = modifiedData;
+                const nodes = normalizeNodes(data);
+
+                currentData = nodes;
                 currentPoolId = id;
                 currentLocation = location;
-                
-                renderTable(modifiedData, id, location);
-                showStatus(`Loaded ${modifiedData.length} providers`, 'success');
+
+                if (nodes.length === 0) {
+                    document.getElementById('providers-table').innerHTML =
+                        '<div class="error-message" style="color:#9aa7b2;">No nodes are currently reported by the network API.</div>';
+                    showStatus('No nodes reported', 'info');
+                    return;
+                }
+
+                renderTable(nodes, id, location);
+                showStatus(`Loaded ${nodes.length} nodes`, 'success');
                 
             } catch (error) {
                 console.error('Error fetching data:', error);
