@@ -204,6 +204,12 @@
   font-weight: 600;
 }
 
+.app-card__note {
+  margin-top: 0.75rem;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
 /* FxFiles Showcase Section */
 .fxfiles-showcase {
   position: relative;
