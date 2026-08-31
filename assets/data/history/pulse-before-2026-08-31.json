@@ -1,0 +1,13 @@
+{
+  "updated": "2026-08-24T08:41:05Z",
+  "week_of": "2026-08-24",
+  "headline": "FULA Network Reaches 24 Nodes as DePIN Storage Matures",
+  "subtitle": "Functionland's quiet growth and sandboxed AI integration position it inside one of crypto's fastest-moving infrastructure categories.",
+  "briefing": "Functionland's FULA network has grown to 24 active nodes \u2014 up from 23 a week prior \u2014 a modest but consistent uptick that reflects the community-driven model at the project's core. <cite index=\"11-1,11-5\">Functionland operates as a decentralized cloud alternative, prioritizing privacy and enabling users to own their data without ads or subscriptions.</cite> That positioning lands it squarely inside a sector gaining serious traction: <cite index=\"9-9\">as of May 2026, CoinGecko tracks 265 DePIN tokens with a combined market cap of approximately $18.92 billion, with sector on-chain revenue from paying customers reaching roughly $150 million in January 2026 alone.</cite>\n\nFunctionland's most differentiated near-term move remains its FxFiles MCP integration, which allows AI assistants sandboxed, read-write-only access to individual user folders. The timing is apt: <cite index=\"21-2,21-3\">in just 18 months since Anthropic open-sourced the Model Context Protocol, MCP has surpassed 97 million monthly SDK downloads and is now supported by every major AI vendor, including OpenAI, Google, Microsoft, and AWS.</cite> By anchoring to this rapidly adopted standard, Functionland gives developers a familiar on-ramp to decentralized storage.\n\nLooking to Q3, <cite index=\"14-7,14-8,14-9\">Functionland's roadmap calls for releasing an open-source monetization plan that distributes revenue among storers, application developers, and content creators \u2014 a model the team estimates could deliver up to 13 times higher revenues compared with traditional cloud intermediaries.</cite> Whether that flywheel can attract enterprise data migration commitments will be the number to watch in the months ahead.",
+  "sources": [
+    "https://messari.io/project/functionland",
+    "https://www.spotedcrypto.com/depin-sector-guide-2026-projects-market-cap/",
+    "https://dev.to/x4nent/complete-guide-to-mcp-model-context-protocol-in-2026-architecture-implementation-and-4a11",
+    "https://fx.land/token/"
+  ]
+}
