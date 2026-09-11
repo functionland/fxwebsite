@@ -1,5 +1,31 @@
 /* === Home Page Styles === */
 
+/* Migration Notice Banner */
+.migration-banner {
+  background: var(--color-primary-accessible);
+  color: var(--color-text-white);
+  font-size: 0.8125rem;
+  text-align: center;
+  padding: 0.5rem 0;
+}
+
+.migration-banner__text {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.migration-banner__link {
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  white-space: nowrap;
+}
+
+.migration-banner__link:hover,
+.migration-banner__link:focus-visible {
+  text-decoration-thickness: 2px;
+}
+
 /* Hero Section */
 .hero {
   position: relative;

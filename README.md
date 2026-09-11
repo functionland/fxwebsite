@@ -26,7 +26,6 @@ fxwebsite/
 │   ├── token.css              # Token page
 │   ├── use-apps.css           # Use Apps page
 │   ├── build.css              # Build Apps page
-│   ├── about.css              # About page
 │   ├── branding.css           # Branding page
 │   ├── fec-nfts.css           # FEC NFTs page
 │   └── ipfs-ecosystem.css     # IPFS Ecosystem page
@@ -42,7 +41,7 @@ fxwebsite/
 │   ├── images/                # All site images (logo, products, team, etc.)
 │   ├── videos/                # Video assets
 │   └── data/                  # JSON data files
-├── about/                     # /about/
+├── about/                     # /about/ (retired; redirects to home)
 ├── branding/                  # /branding/
 ├── build/                     # /build/
 ├── ecosystem/                 # /ecosystem/
