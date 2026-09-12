@@ -60,6 +60,7 @@
         + '<span class="pulse__week">' + escapeHtml(weekLabel) + '</span>'
         + '<button class="pulse__nav pulse__nav--next" style="display:none" aria-label="Next pulse">' + chevronRight + '</button>'
       + '</div>'
+      + '<p class="pulse__source-note">Prepared by AI from real API data</p>'
       + '<h2 class="pulse__headline">' + escapeHtml(stripTags(data.headline)) + '</h2>'
       + '<p class="pulse__subtitle">' + escapeHtml(stripTags(data.subtitle)) + '</p>'
       + '<p class="pulse__briefing">' + escapeHtml(briefing) + '</p>'

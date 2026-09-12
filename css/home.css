@@ -1309,6 +1309,13 @@
   letter-spacing: 0.06em;
 }
 
+.pulse__source-note {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  line-height: 1.4;
+  margin-bottom: var(--spacing-xs);
+}
+
 .pulse__nav {
   width: 28px;
   height: 28px;
