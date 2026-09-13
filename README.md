@@ -1,6 +1,6 @@
-# Functionland Website (fx.land)
+# fx.land website
 
-Source code for the [Functionland](https://fx.land) network website — a static site hosted on GitHub Pages.
+Source code for the fx.land website — a static site hosted on GitHub Pages.
 
 ## Tech Stack
 
