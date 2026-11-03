@@ -260,8 +260,8 @@
     var what = ctx.what || 'this payout';
     switch (kind) {
       case 'pool': return 'The contract’s reward pool holds less FULA than ' + what + '. Nothing was sent. Anyone can top it up from the Fula refill treasury:';
-      case 'stake': return 'The staking contract cannot pay out this stake right now (its principal pool is short). Nothing was sent. Please contact the Fula Governance Association.';
-      case 'distribution': return 'This contract holds less FULA than ' + what + '. Nothing was sent. It is funded by the Fula Governance Association, not by the refill treasury — please contact them.';
+      case 'stake': return 'The staking contract cannot pay out this stake right now (its principal pool is short). Nothing was sent. Please contact info@fx.land.';
+      case 'distribution': return 'This contract holds less FULA than ' + what + '. Nothing was sent. The refill treasury does not fund this contract. Please contact info@fx.land.';
       case 'wallet': return 'Your wallet does not hold enough FULA for this.';
       default: return null;
     }
@@ -269,13 +269,13 @@
   function reasonText(st, needed) {
     var pre = st.preview !== null ? formatFula(st.preview) : '?';
     switch (st.reason) {
-      case 'no-treasury': return 'No refill treasury on this network. Please contact the Fula Governance Association.';
-      case 'not-pool': return 'This contract is not a refill-treasury pool; it needs funding by the Fula Governance Association.';
+      case 'no-treasury': return 'No refill treasury on this network. Please contact info@fx.land.';
+      case 'not-pool': return 'This contract is not a refill-treasury pool, so it cannot be refilled from here. Please contact info@fx.land.';
       case 'paused': return 'Refills are paused by the treasury guardian.';
       case 'disabled': return 'This pool is disabled in the refill treasury.';
       case 'not-below-threshold': return 'The pool is not below its refill threshold (' + formatFula(st.threshold) + ' FULA), so a refill would do nothing right now.';
       case 'cooldown': return 'This pool was refilled recently. Next refill available ' + (st.availableAt ? new Date(st.availableAt * 1000).toLocaleString() : 'later') + '.';
-      case 'treasury-empty': return 'The refill treasury is empty — it needs governance funding before anyone can refill. Please contact the Fula Governance Association.';
+      case 'treasury-empty': return 'The refill treasury is empty, so it cannot refill this pool right now. Please contact info@fx.land.';
       case 'unreadable': return 'Could not read the refill treasury right now. Try again shortly.';
       case 'ok': return (needed !== null && needed !== undefined && st.preview !== null && st.preview < needed)
         ? 'A refill sends +' + pre + ' FULA now (covers ' + pre + ' of the ' + formatFula(needed) + ' FULA needed).'

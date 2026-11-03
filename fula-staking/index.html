@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FULA Staking</title>
-  <meta name="description" content="FULA staking information. The FULA token and staking are governed by Fula Governance DAO at fula.network.">
+  <meta name="description" content="FULA staking information. More about the FULA token at fula.network.">
   <meta property="og:title" content="FULA Staking">
-  <meta property="og:description" content="FULA staking information. The FULA token and staking are governed by Fula Governance DAO at fula.network.">
+  <meta property="og:description" content="FULA staking information. More about the FULA token at fula.network.">
   <meta property="og:url" content="https://fx.land/fula-staking/">
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://fx.land/assets/images/logo/fula-icon-green.png">
@@ -24,7 +24,7 @@
     .staking-widget-wrapper .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
   </style>
   <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Organization","name":"Fula Governance Association","url":"https://fx.land","description":"Association organized under the laws of Switzerland, operating fx.land and responsible for the Fula network, the FULA token and FEC NFTs"}
+{"@context":"https://schema.org","@type":"Organization","name":"Fula Governance Association","url":"https://fx.land","description":"Association organized under the laws of Switzerland that was responsible for the Fula network, the FULA token and FEC NFTs"}
   </script>
 </head>
 <body>
@@ -729,14 +729,6 @@
       <div class="fula-stats-value" id="fula-total-referrers">Loading...</div>
     </div>
     <div class="fula-stats-box">
-      <div class="fula-stats-title">Total Staked on mining</div>
-      <div class="fula-stats-value" id="fula-total-staked-mining">3M FULA</div>
-    </div>
-    <div class="fula-stats-box">
-      <div class="fula-stats-title">Total Stakers on mining</div>
-      <div class="fula-stats-value" id="fula-total-stakers-mining">100</div>
-    </div>
-    <div class="fula-stats-box">
       <div class="fula-stats-title">Your Total Staked</div>
       <div class="fula-stats-value" id="fula-user-staked">N/A</div>
     </div>
@@ -899,6 +891,7 @@
         <li>You can claim your rewards at any time</li>
         <li>Referrers can claim their rewards at any time</li>
         <li>Referrer rewards are distributed linearly over the lock period</li>
+          <li>APY figures are contract settings, not a guarantee. Rewards can only be paid while the contract's reward pool holds FULA.</li>
       </ul>
     </div>
   </div>
@@ -2372,7 +2365,7 @@ import { WagmiAdapter, createAppKit, networks, WagmiCore } from 'https://cdn.jsd
       <div class="container">
         <div class="disclaimer">
           <h3 class="disclaimer__title">Important Notice</h3>
-          <p class="disclaimer__text">This website is operated by Fula Governance Association (FGA), an association organized under the laws of Switzerland. FGA operates this website, together with its domains and servers. FGA is responsible for the Fula network, the FULA token and its treasury, and FEC NFTs. Information on this website describing FxBlox storage hardware and the FxBlox and FxFiles apps refers to products originally developed by Functionland Inc. FGA has not assumed any liabilities, warranty, guarantee or product-support obligations of Functionland Inc. Nothing on this website is an offer to sell or a solicitation to buy any token, security or financial instrument, and nothing on it is investment, financial, tax or legal advice. For information about the Fula network, the FULA token, or available grants, visit fula.network.</p>
+          <p class="disclaimer__text">This website, its domains and servers were transferred from Functionland Inc to Fula Governance Association (FGA), an association organized under the laws of Switzerland. Information on this website describing FxBlox storage hardware and the FxBlox and FxFiles apps refers to products originally developed by Functionland Inc. FGA did not assume any warranty, guarantee or product-support obligations of Functionland Inc. Nothing on this website is an offer to sell or a solicitation to buy any token, security or financial instrument, and nothing on it is investment, financial, tax or legal advice. See <a href="/about/">About</a> for the current position. For information about the Fula network or the FULA token, visit fula.network.</p>
         </div>
       </div>
     </section>
@@ -2389,6 +2382,7 @@ import { WagmiAdapter, createAppKit, networks, WagmiCore } from 'https://cdn.jsd
           <h4 class="footer__col-title">Navigation</h4>
           <div class="footer__links">
             <a href="../" class="footer__link">Home</a>
+            <a href="/about/" class="footer__link">About</a>
             <a href="../live-map/" class="footer__link">Live Map</a>
           </div>
         </div>
@@ -2412,8 +2406,8 @@ import { WagmiAdapter, createAppKit, networks, WagmiCore } from 'https://cdn.jsd
           </div>
         </div>
       </div>
-      <p class="footer__disclaimer">This website is operated by Fula Governance Association (FGA), an association organized under the laws of Switzerland. FGA operates this website, together with its domains and servers. FGA is responsible for the Fula network, the FULA token and its treasury, and FEC NFTs. Information on this website describing FxBlox storage hardware and the FxBlox and FxFiles apps refers to products originally developed by Functionland Inc. FGA has not assumed any liabilities, warranty, guarantee or product-support obligations of Functionland Inc. Nothing on this website is an offer to sell or a solicitation to buy any token, security or financial instrument, and nothing on it is investment, financial, tax or legal advice. For information about the Fula network, the FULA token, or available grants, visit fula.network.</p>
-      <p class="footer__copyright">&copy; 2026 Fula Governance Association. All rights reserved.</p>
+      <p class="footer__disclaimer">This website, its domains and servers were transferred from Functionland Inc to Fula Governance Association (FGA), an association organized under the laws of Switzerland. Information on this website describing FxBlox storage hardware and the FxBlox and FxFiles apps refers to products originally developed by Functionland Inc. FGA did not assume any warranty, guarantee or product-support obligations of Functionland Inc. Nothing on this website is an offer to sell or a solicitation to buy any token, security or financial instrument, and nothing on it is investment, financial, tax or legal advice. See <a href="/about/">About</a> for the current position. For information about the Fula network or the FULA token, visit fula.network.</p>
+      <p class="footer__copyright">&copy; 2026. All rights reserved.</p>
     </div>
   </footer>
 
